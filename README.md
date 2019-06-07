@@ -16,7 +16,7 @@ Developer Guide: https://docs.requarks.io/wiki/developers/developer-guide
 
 `cp ./config.localhost.yml ./config.yml`
 
-# Run the server
+# Run the server in development mode
 
 `yarn`
 
