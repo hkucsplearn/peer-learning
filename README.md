@@ -1,6 +1,7 @@
-Downloaded from https://github.com/Requarks/wiki-v1/releases
+# Credit
+This project is based on the release 1.0.117 of Requarks/wiki-v1 (https://github.com/Requarks/wiki-v1)
 
-Guide: https://docs.requarks.io/wiki/developers/developer-guide
+Developer Guide: https://docs.requarks.io/wiki/developers/developer-guide
 
 # Requirements
 1. Ubuntu 16.04
