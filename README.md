@@ -6,9 +6,6 @@ Documentation: https://docs-legacy.requarks.io/
 # Requirements
 1. Ubuntu 16.04
 2. Node.js v8.10.0
-* `# assume using ubuntu`
-* `curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -`
-* `sudo apt-get install -y nodejs`
 3. Yarn 1.16.0
 4. MongoDB running on localhost port 27017
 
@@ -22,7 +19,7 @@ Documentation: https://docs-legacy.requarks.io/
 
 `cp ./config.localhost.yml ./config.yml`
 
-`yarn config`
+`yarn run config`
 
 (skip the Git Repository configuration and don't press "start" at the end)
 
