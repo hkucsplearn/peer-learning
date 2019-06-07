@@ -116,6 +116,15 @@ export default {
           },
           '|',
           {
+            name: 'link',
+            action: (editor) => {
+              window.alert('Coming soon!')
+              // todo
+            },
+            className: 'nc-icon-outline ui-2_link-68',
+            title: 'Insert Link'
+          },
+          {
             name: 'image',
             action: (editor) => {
               self.$store.dispatch('editorFile/open', { mode: 'image' })
