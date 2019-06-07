@@ -16,11 +16,21 @@ Developer Guide: https://docs.requarks.io/wiki/developers/developer-guide
 
 `cp ./config.localhost.yml ./config.yml`
 
-# Run the server in development mode
+# Build the server
 
 `yarn`
 
 `yarn run build`
+
+# Run the server
+
+`sudo yarn start`
+
+# Stop the server
+
+`sudo yarn stop`
+
+# Run the server in development mode
 
 `sudo yarn run dev`
 

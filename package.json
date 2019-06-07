@@ -4,7 +4,7 @@
   "description": "A modern, lightweight and powerful wiki app built on NodeJS, Git and Markdown",
   "main": "wiki.js",
   "scripts": {
-    "start": "WIKI_JS_HEROKU=1 WIKI_ADMIN_EMAIL=\"admin@cs.hku.hk\" node wiki start",
+    "start": "node wiki start",
     "stop": "node wiki stop",
     "restart": "node wiki restart",
     "build": "node tools/fuse",
