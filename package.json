@@ -7,8 +7,9 @@
     "start": "node wiki start",
     "stop": "node wiki stop",
     "restart": "node wiki restart",
+    "config": "node wiki configure",
     "build": "node tools/fuse",
-    "dev": "WIKI_JS_HEROKU=1 WIKI_ADMIN_EMAIL=\"admin@cs.hku.hk\" node tools/fuse -d",
+    "dev": "node tools/fuse -d",
     "dev-configure": "node tools/fuse -c",
     "test": "jest",
     "postinstall": "opencollective postinstall"
