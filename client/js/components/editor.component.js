@@ -3,6 +3,7 @@
 /* global $, siteRoot */
 
 let mde
+let contentBeforeEdit
 
 export default {
   name: 'editor',
@@ -24,6 +25,13 @@ export default {
     },
     save() {
       let self = this
+
+      if (contentBeforeEdit === mde.value()) {
+        // no changes made, simply exit
+        window.location.assign(siteRoot + '/' + self.currentPath)
+        return
+      }
+
       this.$http.put(window.location.href, {
         markdown: mde.value()
       }).then(resp => {
@@ -215,6 +223,9 @@ export default {
           'toggleCodeBlock': null
         }
       })
+
+      // cache the content of editor before user making changes
+      contentBeforeEdit = mde.value()
 
       // Save
       $(window).bind('keydown', (ev) => {
