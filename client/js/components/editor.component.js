@@ -118,8 +118,24 @@ export default {
           {
             name: 'link',
             action: (editor) => {
-              window.alert('Coming soon!')
-              // todo
+              if (editor.codemirror.doc.getSelection().replace(/\s/g, '') === '') {
+                window.alert('Please select text first')
+                return
+              }
+
+              let inputedUrl = ''
+              while (inputedUrl !== null && inputedUrl.replace(/\s/g, '') === '') {
+                // prompt until user entered non-whitespace url
+                inputedUrl = window.prompt('Input the url', '')
+              }
+              if (inputedUrl === null) {
+                // user clicked cancel
+                return
+              }
+
+              const selectedCode = editor.codemirror.doc.getSelection()
+              const codeToInsert = `[${selectedCode}](${inputedUrl})`
+              editor.codemirror.replaceSelection(codeToInsert)
             },
             className: 'nc-icon-outline ui-2_link-68',
             title: 'Insert Link'
