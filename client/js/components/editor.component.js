@@ -196,6 +196,12 @@ export default {
           },
           '|',
           {
+            name: 'table',
+            action: SimpleMDE.drawTable,
+            className: 'nc-icon-outline ui-2_grid-square',
+            title: 'Insert Table'
+          },
+          {
             name: 'horizontal-rule',
             action: SimpleMDE.drawHorizontalRule,
             className: 'nc-icon-outline design_distribute-vertical',
