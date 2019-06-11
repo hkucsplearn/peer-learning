@@ -27,6 +27,10 @@ var mkdown = md({
   linkify: true,
   typography: true,
   highlight(str, lang) {
+    if (lang === 'c_cpp') {
+      // this library seems not support c_cpp lang code, need to use cpp instead
+      lang = 'cpp'
+    }
     if (appconfig.theme.code.colorize && lang && hljs.getLanguage(lang)) {
       try {
         return '<pre class="hljs"><code>' + hljs.highlight(lang, str, true).value + '</code></pre>'

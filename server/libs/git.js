@@ -288,15 +288,14 @@ module.exports = {
   getHistory(entryPath) {
     let self = this
     let gitFilePath = entryPath + '.md'
-
-    return self._git.exec('log', ['--max-count=25', '--skip=1', '--format=format:%H %h %cI %cE %cN', '--', gitFilePath]).then((cProc) => {
+    return self._git.exec('log', ['--max-count=25', '--format=format:%H %h %cI %cE %cN %aE %aN', '--', gitFilePath]).then((cProc) => {
       let out = cProc.stdout.toString()
       if (_.includes(out, 'fatal')) {
         let errorMsg = _.capitalize(_.head(_.split(_.replace(out, 'fatal: ', ''), ',')))
         throw new Error(errorMsg)
       }
       let hist = _.chain(out).split('\n').map(h => {
-        let hParts = h.split(' ', 4)
+        let hParts = h.split(' ', 7)
         let hDate = moment(hParts[2])
         return {
           commit: hParts[0],
@@ -305,7 +304,9 @@ module.exports = {
           dateFull: hDate.format('LLLL'),
           dateCalendar: hDate.calendar(null, { sameElse: 'llll' }),
           email: hParts[3],
-          name: hParts[4]
+          name: hParts[4],
+          authorEmail: hParts[5],
+          authorName: hParts[6]
         }
       }).value()
       return hist
@@ -323,7 +324,7 @@ module.exports = {
       if (_.startsWith(out, 'fatal: ')) {
         throw new Error(out)
       } else if (!_.includes(out, 'diff')) {
-        throw new Error('Unable to query diff data.')
+        throw new Error('No diff')
       } else {
         return out
       }

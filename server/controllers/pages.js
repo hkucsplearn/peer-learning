@@ -217,7 +217,11 @@ router.post('/hist', (req, res, next) => {
     res.json({ ok: true, diff })
     return true
   }).catch((err) => {
-    res.status(500).json({ ok: false, error: err.message })
+    if (err.message === 'No diff') {
+      res.json({ ok: false, noDiff: true })
+    } else {
+      res.status(500).json({ ok: false, error: err.message })
+    }
   })
 })
 

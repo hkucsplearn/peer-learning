@@ -65,9 +65,19 @@ auth:
     tokenURL: OPENID_CONNECT_TOKEN_URL
     emailClaim: OPENID_CONNECT_EMAIL_CLAIM_PATH
     usernameClaim: OPENID_CONNECT_USERNAME_CLAIM_PATH
-sessionSecret: 042fee3656755e77c80ce4efba199219e98556ddf66e94e0d7a39770ae746ff8
+sessionSecret: 6c7aabcb688287ff1d97c5829d51199f812f8b84ce4be821bde3d3f4ed45b8f6
 db: 'mongodb://localhost:27017/peerlearning'
-git: false
+git:
+  url: 'git@github.com:hkucsplearn/peer-learning-article.git'
+  branch: master
+  auth:
+    type: ssh
+    username: ''
+    password: ''
+    privateKey: /etc/wiki/keys/git.pem
+    sslVerify: true
+  showUserEmail: false
+  serverEmail: plearn@cs.hku.hk
 features:
   linebreaks: true
   mathjax: true
