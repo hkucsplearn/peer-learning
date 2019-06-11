@@ -22,23 +22,26 @@
                   span {{ $t('history.timestamp') }}: #[strong {{ current.dateFull }}]
                 p
                   i.nc-icon-outline.i.nc-icon-outline.users_man-23
-                  span {{ $t('history.author') }}: #[strong {{ current.name }} &lt;{{ current.email }}&gt;]
-                p
-                  i.nc-icon-outline.media-1_flash-21
-                  span {{ $t('history.commit') }}: #[strong {{ current.commit }}]
+                  span {{ $t('history.author') }}: #[strong {{ current.authorName }} &lt;{{ current.authorEmail }}&gt;]
+                //- p
+                //-   i.nc-icon-outline.media-1_flash-21
+                //-   span {{ $t('history.commit') }}: #[strong {{ current.commit }}]
               .column.history-info-actions
-                .button-group
-                  button.button.is-blue-grey(@click='compareWith')
-                    i.nc-icon-outline.design_path-intersect
-                    span {{ $t('history.comparewith') }}
-                  button.button.is-blue-grey(@click='view')
-                    i.nc-icon-outline.ui-1_eye-17
-                    span {{ $t('history.view') }}
-                  button.button.is-blue-grey(@click='revertToVersion')
-                    i.nc-icon-outline.arrows-4_undo-29
-                    span {{ $t('history.reverttoversion') }}
+                //- .button-group
+                //-   button.button.is-blue-grey(@click='compareWith')
+                //-     i.nc-icon-outline.design_path-intersect
+                //-     span {{ $t('history.comparewith') }}
+                //-   button.button.is-blue-grey(@click='view')
+                //-     i.nc-icon-outline.ui-1_eye-17
+                //-     span {{ $t('history.view') }}
+                //-   button.button.is-blue-grey(@click='revertToVersion')
+                //-     i.nc-icon-outline.arrows-4_undo-29
+                //-     span {{ $t('history.reverttoversion') }}
                 toggle.is-dark(v-model='sidebyside', :desc='$t("history.sidebyside")')
-          .history-diff#diff
+          .history-diff-message(v-if='noDiff') {{ isCurrentVersion? 'Current Version' : 'No Change' }}
+          .history-diff#diff(ref="diff")
+
+
 
 </template>
 
@@ -53,7 +56,9 @@ export default {
       versions: [],
       current: {},
       diffui: {},
-      sidebyside: true
+      sidebyside: true,
+      noDiff: false,
+      isCurrentVersion: false
     }
   },
   watch: {
@@ -62,27 +67,27 @@ export default {
     }
   },
   methods: {
-    compareWith() {
-      this.$store.dispatch('alert', {
-        style: 'purple',
-        icon: 'objects_astronaut',
-        msg: 'Sorry, this function is not available. Coming soon!'
-      })
-    },
-    view() {
-      this.$store.dispatch('alert', {
-        style: 'purple',
-        icon: 'objects_astronaut',
-        msg: 'Sorry, this function is not available. Coming soon!'
-      })
-    },
-    revertToVersion() {
-      this.$store.dispatch('alert', {
-        style: 'purple',
-        icon: 'objects_astronaut',
-        msg: 'Sorry, this function is not available. Coming soon!'
-      })
-    },
+    // compareWith() {
+    //   this.$store.dispatch('alert', {
+    //     style: 'purple',
+    //     icon: 'objects_astronaut',
+    //     msg: 'Sorry, this function is not available. Coming soon!'
+    //   })
+    // },
+    // view() {
+    //   this.$store.dispatch('alert', {
+    //     style: 'purple',
+    //     icon: 'objects_astronaut',
+    //     msg: 'Sorry, this function is not available. Coming soon!'
+    //   })
+    // },
+    // revertToVersion() {
+    //   this.$store.dispatch('alert', {
+    //     style: 'purple',
+    //     icon: 'objects_astronaut',
+    //     msg: 'Sorry, this function is not available. Coming soon!'
+    //   })
+    // },
     draw() {
       if (diffuiIsReady) {
         diffui.draw('#diff', {
@@ -103,9 +108,16 @@ export default {
       }).then(resp => {
         return resp.json()
       }).then(resp => {
-        diffui = new Diff2HtmlUI({ diff: resp.diff })
-        diffuiIsReady = true
-        self.draw()
+        if(resp.noDiff) {
+          this.noDiff = true
+          this.$refs.diff.innerHTML = ''
+          this.isCurrentVersion = this.versions[0].commit === cm.commit
+        } else {
+          this.noDiff = false
+          diffui = new Diff2HtmlUI({ diff: resp.diff })
+          diffuiIsReady = true
+          self.draw()
+        }
       }).catch(err => {
         console.log(err)
         self.$store.dispatch('alert', {

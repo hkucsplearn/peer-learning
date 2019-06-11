@@ -3,6 +3,7 @@
 /* global $, siteRoot */
 
 let mde
+let contentBeforeEdit
 
 export default {
   name: 'editor',
@@ -24,6 +25,13 @@ export default {
     },
     save() {
       let self = this
+
+      if (contentBeforeEdit === mde.value()) {
+        // no changes made, simply exit
+        window.location.assign(siteRoot + '/' + self.currentPath)
+        return
+      }
+
       this.$http.put(window.location.href, {
         markdown: mde.value()
       }).then(resp => {
@@ -116,6 +124,31 @@ export default {
           },
           '|',
           {
+            name: 'link',
+            action: (editor) => {
+              if (editor.codemirror.doc.getSelection().replace(/\s/g, '') === '') {
+                window.alert('Please select text first')
+                return
+              }
+
+              let inputedUrl = ''
+              while (inputedUrl !== null && inputedUrl.replace(/\s/g, '') === '') {
+                // prompt until user entered non-whitespace url
+                inputedUrl = window.prompt('Input the url', '')
+              }
+              if (inputedUrl === null) {
+                // user clicked cancel
+                return
+              }
+
+              const selectedCode = editor.codemirror.doc.getSelection()
+              const codeToInsert = `[${selectedCode}](${inputedUrl})`
+              editor.codemirror.replaceSelection(codeToInsert)
+            },
+            className: 'nc-icon-outline ui-2_link-68',
+            title: 'Insert Link'
+          },
+          {
             name: 'image',
             action: (editor) => {
               self.$store.dispatch('editorFile/open', { mode: 'image' })
@@ -171,6 +204,12 @@ export default {
           },
           '|',
           {
+            name: 'table',
+            action: SimpleMDE.drawTable,
+            className: 'nc-icon-outline ui-2_grid-square',
+            title: 'Insert Table'
+          },
+          {
             name: 'horizontal-rule',
             action: SimpleMDE.drawHorizontalRule,
             className: 'nc-icon-outline design_distribute-vertical',
@@ -184,6 +223,9 @@ export default {
           'toggleCodeBlock': null
         }
       })
+
+      // cache the content of editor before user making changes
+      contentBeforeEdit = mde.value()
 
       // Save
       $(window).bind('keydown', (ev) => {
