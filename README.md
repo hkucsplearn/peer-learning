@@ -21,9 +21,8 @@ Documentation: https://docs-legacy.requarks.io/
 
 `yarn run config`
 
-Click "SKIP THIS STEP" in "Git Repository" section, don't press "Start" at the end, simply close the browser tab.
+A local git Repository is used to to store the articles content and change history. The configuration will ask you to specify a remote git repository, which the local git repo will sync with, and information to access the remote git repo, but you can skip this part to use local git repository only. Related information: [Connecting to GitHub with SSH](https://help.github.com/en/articles/connecting-to-github-with-ssh)
 
-After configured, stop the process, and the server is now ready to be started.
 
 # Run the server in development mode
 
