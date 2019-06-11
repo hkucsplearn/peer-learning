@@ -60,9 +60,11 @@
           self.$refs.editorVideoInput.focus()
         }, 100)
       },
+
       cancel () {
         this.$store.dispatch('editorVideo/close')
       },
+
       insertVideo () {
         let self = this
 
@@ -87,6 +89,7 @@
         this.cancel()
       }
     },
+
     mounted () {
       this.$root.$on('editorVideo/init', this.init)
     }

@@ -1,7 +1,6 @@
 <template lang="pug">
   .container.is-fluid
     .columns.is-gapless
-
       .column.is-narrow.is-hidden-touch.sidebar
         aside.stickyscroll
           .sidebar-label

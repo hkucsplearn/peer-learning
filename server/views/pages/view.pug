@@ -33,13 +33,10 @@ block rootNavRight
         span= t('nav.create')
 
 block content
-
   content-view(inline-template)
     .container.is-fluid.has-mkcontent
       .columns.is-gapless
-
         .column.is-narrow.is-hidden-touch.sidebar
-
           aside
             .sidebar-label
               span= t('sidebar.navigation')
@@ -52,6 +49,10 @@ block content
                 a(href='/all')
                   i.nc-icon-outline.business_hierarchy-55
                   span= t('nav.allpages')
+              li
+                a(href='/userguide')
+                  i.nc-icon-outline.arrows-1_log-in
+                  span= t('nav.userguide')
               if pageData.parent
                 li
                   a(href='/' + pageData.parent.path)

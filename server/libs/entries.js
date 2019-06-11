@@ -134,7 +134,6 @@ module.exports = {
             pageData.meta.path = entryPath
 
             // Get parent
-
             let parentPromise = (options.includeParentInfo) ? self.getParentInfo(entryPath).then((parentData) => {
               return (pageData.parent = parentData)
             }).catch((err) => { // eslint-disable-line handle-callback-err
