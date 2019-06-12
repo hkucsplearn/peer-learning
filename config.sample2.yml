@@ -74,10 +74,10 @@ git:
     type: ssh
     username: ''
     password: ''
-    privateKey: C:/Users/JEFF/.ssh/id_rsa
+    privateKey: /etc/wiki/keys/git.pem
     sslVerify: true
   showUserEmail: false
-  serverEmail: u3518673@connect.hku.hk
+  serverEmail: plearn@cs.hku.hk
   linebreaks: true
   mathjax: true
 externalLogging:
