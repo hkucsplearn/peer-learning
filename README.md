@@ -17,7 +17,7 @@ Documentation: https://docs-legacy.requarks.io/
 
 # Configure the server
 
-`cp ./config.localhost.yml ./config.yml`
+`cp ./config.sample2.yml ./config.yml`
 
 `yarn run config`
 
