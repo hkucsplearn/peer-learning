@@ -17,7 +17,7 @@ Documentation: https://docs-legacy.requarks.io/
 
 # Configure the server
 
-`cp ./config.sample2.yml ./config.yml`
+`cp ./config.server.yml ./config.yml`
 
 `yarn run config`
 
@@ -37,17 +37,3 @@ A local git Repository is used to to store the articles content and change histo
 # Stop the server
 
 `sudo yarn stop`
-
-# Nginx Reserve Proxy (optional)
-
-`sudo apt update`
-
-`sudo apt install nginx`
-
-`cp -f ./nginx.proxy.conf /etc/nginx/sites-available/default`
-
-`sudo nginx -t`
-
-`sudo systemctl enable nginx`
-
-`sudo systemctl restart nginx`
