@@ -76,7 +76,7 @@ git:
     password: ''
     privateKey: /etc/wiki/keys/git.pem
     sslVerify: true
-  showUserEmail: false
+  showUserEmail: true
   serverEmail: plearn@cs.hku.hk
   linebreaks: true
   mathjax: true
