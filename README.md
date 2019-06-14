@@ -41,4 +41,5 @@ A local git Repository is used to to store the articles content and change histo
 # note
 
 ## icon
-`i.nc-icon-outline.business_hierarchy-55` is a icon where `business_hierarchy-55` is the icon name found here: [list of icons](https://www.sindicalistasdebase.es/assets/css/icons/demo-glyph.html)
+`i.nc-icon-outline.business_hierarchy-55`
+* an icon with id `business_hierarchy-55` which can be found here: [list of icons](https://www.sindicalistasdebase.es/assets/css/icons/demo-glyph.html)
