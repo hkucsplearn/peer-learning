@@ -46,18 +46,13 @@ block content
                   i.nc-icon-outline.ui-1_home-minimal
                   span= t('nav.root')
               li
-                a(href='/all')
-                  i.nc-icon-outline.business_hierarchy-55
-                  span= t('nav.allpages')
-              li
                 a(href='/userguide')
-                  i.nc-icon-outline.arrows-1_log-in
+                  i.nc-icon-outline.location_compass-04
                   span= t('nav.userguide')
-              if pageData.parent
-                li
-                  a(href='/' + pageData.parent.path)
-                    i.icon-reply
-                    span= pageData.parent.title
+              li
+                a(href='/all')
+                  i.nc-icon-outline.design_bullet-list-68
+                  span= t('nav.allpages')
               if !isGuest
                 li
                   a(href='/admin')
@@ -68,6 +63,11 @@ block content
                   a(href='/login')
                     i.nc-icon-outline.arrows-1_log-in
                     span= t('nav.login')
+              if pageData.parent
+                li
+                  a(href='/' + pageData.parent.path)
+                    i.icon-reply
+                    span= pageData.parent.title
           aside.sidebar-pagecontents
             .sidebar-label
               span= t('sidebar.pagecontents')

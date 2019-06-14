@@ -47,7 +47,6 @@ import modalUpgradeSystemComponent from './components/modal-upgrade-system.vue'
 import pageLoaderComponent from './components/page-loader.vue'
 import searchComponent from './components/search.vue'
 import toggleComponent from './components/toggle.vue'
-import treeComponent from './components/tree.vue'
 
 import adminEditUserComponent from './pages/admin-edit-user.component.js'
 import adminProfileComponent from './pages/admin-profile.component.js'
@@ -97,7 +96,6 @@ Vue.component('pageLoader', pageLoaderComponent)
 Vue.component('search', searchComponent)
 Vue.component('sourceView', sourceViewComponent)
 Vue.component('toggle', toggleComponent)
-Vue.component('tree', treeComponent)
 
 // ====================================
 // Load Localization strings

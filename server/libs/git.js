@@ -294,7 +294,6 @@ module.exports = {
         let errorMsg = _.capitalize(_.head(_.split(_.replace(out, 'fatal: ', ''), ',')))
         throw new Error(errorMsg)
       }
-      console.log(out)
       let hist = _.chain(out).split('\n').map(h => {
         let hParts = h.split(';', 7)
         let hDate = moment(hParts[2])
