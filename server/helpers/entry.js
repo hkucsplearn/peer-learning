@@ -23,7 +23,6 @@ module.exports = {
     }
 
     let urlParts = _.filter(_.split(urlPath, '/'), (p) => { return !_.isEmpty(p) })
-
     return _.join(urlParts, '/')
   },
 
@@ -34,6 +33,7 @@ module.exports = {
    * @return     {String}  The full path.
    */
   getFullPath (entryPath) {
+    // console.log(entryPath)
     return path.join(appdata.repoPath, entryPath + '.md')
   },
 

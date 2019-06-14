@@ -5,9 +5,14 @@
 const Promise = require('bluebird')
 const path = require('path')
 const fs = Promise.promisifyAll(require('fs-extra'))
+const klaw = require('klaw')
 const _ = require('lodash')
 
 const entryHelper = require('../helpers/entry')
+
+var promise = new Promise(function(resolve, reject) {
+  resolve(1)
+})
 
 /**
  * Entries Model
@@ -161,6 +166,31 @@ module.exports = {
       }
     }).catch((err) => { // eslint-disable-line handle-callback-err
       throw new Promise.OperationalError(lang.t('errors:notexist', { path: entryPath }))
+    })
+  },
+
+  /**
+   * Created on 14/06/2019
+   * Obtain the file silibings of a document
+   *
+   * @param      {String}           entryPath  The entry path
+   * @return     {Promise<Object>}  Page Data
+   */
+  getPageSilibing(entryPath) {
+    return new Promise((resolve, reject) => {
+      let fPath = entryHelper.getFullPath(entryPath).replace('.md', '')
+      let items = []
+
+      klaw(fPath, {
+        filter: pathItem => {
+          return !pathItem.endsWith('.git')
+        }
+      }).on('data', item => {
+        let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
+        items.push(correctedPath)
+      }).on('end', () => {
+        return resolve(items)
+      })
     })
   },
 

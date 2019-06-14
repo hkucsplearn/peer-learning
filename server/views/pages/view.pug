@@ -74,6 +74,7 @@ block content
             ul.sidebar-menu
               li.is-hidden-until-scroll: a(href='#root', title='Top of Page')
                 i.icon-arrow-up2
+              != pageSilibingList
               +tocMenu(pageData.tree)
 
         .column
