@@ -7,9 +7,6 @@ block rootNavRight
       a.button(v-on:click='$store.dispatch("modalCreatePage/open")')
         i.nc-icon-outline.ui-1_simple-add
         span= t('nav.create')
-    a.button.btn-edit-discard(href='/')
-      i.nc-icon-outline.ui-1_home-minimal
-      span= t('nav.root')
 
 block content
   content-view(inline-template)
