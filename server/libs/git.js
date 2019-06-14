@@ -288,14 +288,14 @@ module.exports = {
   getHistory(entryPath) {
     let self = this
     let gitFilePath = entryPath + '.md'
-    return self._git.exec('log', ['--max-count=25', '--format=format:%H %h %cI %cE %cN %aE %aN', '--', gitFilePath]).then((cProc) => {
+    return self._git.exec('log', ['--max-count=25', '--format=format:%H;%h;%cI;%cE;%cN;%aE;%aN', '--', gitFilePath]).then((cProc) => {
       let out = cProc.stdout.toString()
       if (_.includes(out, 'fatal')) {
         let errorMsg = _.capitalize(_.head(_.split(_.replace(out, 'fatal: ', ''), ',')))
         throw new Error(errorMsg)
       }
       let hist = _.chain(out).split('\n').map(h => {
-        let hParts = h.split(' ', 7)
+        let hParts = h.split(';', 7)
         let hDate = moment(hParts[2])
         return {
           commit: hParts[0],

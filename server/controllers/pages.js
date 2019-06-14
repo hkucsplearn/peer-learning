@@ -143,7 +143,19 @@ router.put('/create/*', (req, res, next) => {
  */
 router.use((req, res, next) => {
   if (_.endsWith(req.url, '/all')) {
-    res.render('pages/all')
+    entries.getAllArticlePath(req.user)
+      .then(data => {
+        data = data.map(d => '/' + d._id.toString())
+        const pageData = data.filter(d => d !== '/home' && d !== '/userguide')
+        res.render('pages/all', { pageData })
+        return true
+      })
+      .catch((err) => {
+        res.render('error', {
+          message: err.message,
+          error: {}
+        })
+      })
   } else {
     next()
   }

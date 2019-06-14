@@ -472,6 +472,14 @@ module.exports = {
     })
   },
 
+  getAllArticlePath(usr) {
+    return db.Entry.find({}, 'title parentPath isDirectory isEntry').sort({ _id: 'asc' }).then(results => {
+      return _.filter(results, r => {
+        return rights.checkRole('/' + r._id, usr.rights, 'read')
+      })
+    })
+  },
+
   getHistory(entryPath) {
     return db.Entry.findOne({ _id: entryPath, isEntry: true }).then(entry => {
       if (!entry) { return false }

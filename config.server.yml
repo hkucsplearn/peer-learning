@@ -1,6 +1,6 @@
 title: Peer Learning
-host: 'http://localhost:3500'
-port: 3500
+host: 'http://18.162.186.200:80'
+port: 80
 paths:
   repo: ./repo
   data: ./data
@@ -65,7 +65,7 @@ auth:
     tokenURL: OPENID_CONNECT_TOKEN_URL
     emailClaim: OPENID_CONNECT_EMAIL_CLAIM_PATH
     usernameClaim: OPENID_CONNECT_USERNAME_CLAIM_PATH
-sessionSecret: 6c7aabcb688287ff1d97c5829d51199f812f8b84ce4be821bde3d3f4ed45b8f6
+sessionSecret: abe523594485d21dc4490404db4a5f26ff60df57a9a3f6a29085e3642b43f4e3
 db: 'mongodb://localhost:27017/peerlearning'
 git:
   url: 'git@github.com:hkucsplearn/peer-learning-article.git'
@@ -74,12 +74,10 @@ git:
     type: ssh
     username: ''
     password: ''
-    privateKey: 'C:\Users\Eric\.ssh'
+    privateKey: /home/ubuntu/.ssh/id_rsa
     sslVerify: true
   showUserEmail: true
-  serverEmail: chiholau@connect.hku.hk
-  linebreaks: true
-  mathjax: true
+  serverEmail: plearn@cs.hku.hk
 externalLogging:
   bugsnag: false
   loggly: false

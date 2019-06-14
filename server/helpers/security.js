@@ -9,7 +9,8 @@ module.exports = {
     let wlist = new RegExp('[^a-zA-Z0-9-_.\',& ' + appdata.regex.cjk + appdata.regex.arabic + ']', 'g')
     return {
       name: _.chain(user.name).replace(wlist, '').trim().value(),
-      email: appconfig.git.showUserEmail ? user.email : appconfig.git.serverEmail
+      // email: appconfig.git.showUserEmail ? user.email : appconfig.git.serverEmail
+      email: user.email // I think this is what we want
     }
   }
 }
