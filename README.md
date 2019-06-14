@@ -38,7 +38,7 @@ A local git Repository is used to to store the articles content and change histo
 
 `sudo yarn stop`
 
-# note
+# Remark
 
 ## icon
 `i.nc-icon-outline.business_hierarchy-55`
