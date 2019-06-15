@@ -85,7 +85,7 @@ externalLogging:
   rollbar: false
   sentry: false
 theme:
-  primary: indigo
+  primary: teal
   alt: blue-grey
   viewSource: all
   footer: blue-grey
