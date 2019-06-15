@@ -10,10 +10,6 @@ const _ = require('lodash')
 
 const entryHelper = require('../helpers/entry')
 
-var promise = new Promise(function(resolve, reject) {
-  resolve(1)
-})
-
 /**
  * Entries Model
  */
@@ -177,22 +173,43 @@ module.exports = {
    * @return     {Promise<Object>}  Page Data
    */
   getPageSilibing(entryPath) {
-    return new Promise((resolve, reject) => {
-      let fPath = entryHelper.getFullPath(entryPath).replace('.md', '')
-      let items = []
+    return entryHelper.isFolder(entryPath).then((folderExists) => {
+      if (folderExists) {
+        console.log('true1')
+        return this.getFolderDirectory(entryPath)
+      } else {
+        console.log('false1')
+        entryPath = entryHelper.getRootPath(entryPath)
+        return this.getFolderDirectory(entryPath)
+      }
+    })
+  },
 
+  /**
+   * Created on 15/06/2019
+   * Obtain the document files inside a folder
+   *
+   * @param      {String}           entryPath  The entry path
+   * @return     {Promise<Object>}  Document files path
+   */
+  getFolderDirectory(entryPath) {
+    let fPath = entryHelper.getFullPath(entryPath).replace('.md', '')
+    let items = []
+
+    return new Promise((resolve, reject) => {
       klaw(fPath, {
         filter: pathItem => {
-          return !pathItem.endsWith('.git')
+          return !pathItem.endsWith('.git') && !pathItem.endsWith('\\uploads') && !pathItem.endsWith('README.md') && pathItem.endsWith('.md')
         }
       }).on('data', item => {
         let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
         items.push(correctedPath)
       }).on('end', () => {
+        items.shift()
         return resolve(items)
       }).on('error', (err, item) => {
         console.log(err.message)
-        console.log(item.path)
+        console.log(items)
         return resolve(items)
       })
     })
