@@ -190,6 +190,10 @@ module.exports = {
         items.push(correctedPath)
       }).on('end', () => {
         return resolve(items)
+      }).on('error', (err, item) => {
+        console.log(err.message)
+        console.log(item.path)
+        return resolve(items)
       })
     })
   },

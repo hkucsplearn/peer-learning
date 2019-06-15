@@ -244,15 +244,11 @@ router.get('/*', (req, res, next) => {
   let safePath = entryHelper.parsePath(req.path)
 
   entries.fetch(safePath).then((pageData) => {
-    let pageSilibingList = []
-
     if (pageData) {
-      entries.getPageSilibing(safePath).then((rawSilibingList) => {
-        rawSilibingList.forEach(item => {
-          pageSilibingList.push(item)
-        })
+      entries.getPageSilibing(safePath).then((pageSilibingList) => {
+        console.log(pageSilibingList)
+        res.render('pages/view', { pageData, pageSilibingList })
       })
-      res.render('pages/view', { pageData, pageSilibingList })
     } else {
       res.status(404).render('error-notexist', {
         newpath: safePath
