@@ -170,7 +170,7 @@ module.exports = {
    * Obtain the file silibings of a document
    *
    * @param      {String}           entryPath  The entry path
-   * @return     {Promise<Object>}  Page Data
+   * @return     {Promise<Object>}  All file silibing paths of the current document
    */
   getPageSilibing(entryPath) {
     return entryHelper.isFolder(entryPath).then((folderExists) => {
@@ -190,7 +190,7 @@ module.exports = {
    * Obtain the document files inside a folder
    *
    * @param      {String}           entryPath  The entry path
-   * @return     {Promise<Object>}  Document files path
+   * @return     {Promise<Object>}  All document paths inside a folder
    */
   getFolderDirectory(entryPath) {
     let fPath = entryHelper.getFullPath(entryPath).replace('.md', '')
@@ -205,7 +205,9 @@ module.exports = {
         let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
         items.push(correctedPath)
       }).on('end', () => {
-        items.shift()
+        if (items[0] === '') {
+          items.shift()
+        }
         return resolve(items)
       }).on('error', (err, item) => {
         console.log(err.message)

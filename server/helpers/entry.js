@@ -3,7 +3,6 @@
 const crypto = require('crypto')
 const Promise = require('bluebird')
 const path = require('path')
-const klaw = require('klaw')
 const fs = Promise.promisifyAll(require('fs-extra'))
 const qs = require('querystring')
 const _ = require('lodash')
@@ -89,7 +88,7 @@ module.exports = {
    * Gets the root folder path of the document
    *
    * @param      {String}  fullPath  The full path
-   * @return     {String}  The entry path
+   * @return     {String}  The root folder path
    */
   getRootPath (entryPath) {
     return (entryPath.lastIndexOf('/') === 0) ? '/' : entryPath.substring(0, entryPath.lastIndexOf('/'))
