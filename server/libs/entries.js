@@ -169,18 +169,31 @@ module.exports = {
    * Created on 14/06/2019
    * Obtain the file silibings of a document
    *
-   * @param      {String}           entryPath  The entry path
+   * @param      {String}           rawEntryPath  The entry path
    * @return     {Promise<Object>}  All file silibing paths of the current document
    */
-  getPageSilibing(entryPath) {
-    return entryHelper.isFolder(entryPath).then((folderExists) => {
+  getPageSilibing(rawEntryPath) {
+    console.log(rawEntryPath)
+
+    return entryHelper.isFolder(rawEntryPath).then((folderExists) => {
+      let realEntryPath = entryHelper.getRootPath(rawEntryPath)
+
       if (folderExists) {
-        console.log('true1')
-        return this.getFolderDirectory(entryPath)
+        // If sub-folder exists
+
+        return this.getFolderDirectory(rawEntryPath, folderExists)
+      } else if (rawEntryPath === 'home') {
+        // If sub-folder not exists + Current page is 'home'
+
+        return this.getFolderDirectory(rawEntryPath, true)
       } else {
-        console.log('false1')
-        entryPath = entryHelper.getRootPath(entryPath)
-        return this.getFolderDirectory(entryPath)
+        // If sub-folder not exists + Current page is not 'home'
+
+        if (realEntryPath === '') {
+          return this.getFolderDirectory(realEntryPath, false)
+        } else {
+          return this.getFolderDirectory(realEntryPath, true)
+        }
       }
     })
   },
@@ -189,31 +202,59 @@ module.exports = {
    * Created on 15/06/2019
    * Obtain the document files inside a folder
    *
-   * @param      {String}           entryPath  The entry path
+   * @param      {String}           entryPath     The entry path
+   * @param      {Boolean}          folderExists  Is entryPath contains a folder
    * @return     {Promise<Object>}  All document paths inside a folder
    */
-  getFolderDirectory(entryPath) {
+  getFolderDirectory(entryPath, folderExists) {
     let fPath = entryHelper.getFullPath(entryPath).replace('.md', '')
     let items = []
 
     return new Promise((resolve, reject) => {
-      klaw(fPath, {
-        filter: pathItem => {
-          return !pathItem.endsWith('.git') && !pathItem.endsWith('\\uploads') && !pathItem.endsWith('README.md') && pathItem.endsWith('.md')
-        }
-      }).on('data', item => {
-        let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
-        items.push(correctedPath)
-      }).on('end', () => {
-        if (items[0] === '') {
-          items.shift()
-        }
+      if (entryPath === 'home') {
+        // If current page is 'home'
+
+        fPath = fPath.replace('\\home', '')
+        console.log(fPath)
+
+        klaw(fPath, {
+          filter: pathItem => {
+            return pathItem.endsWith('.md') && !pathItem.endsWith('README.md')
+          }
+        }).on('data', item => {
+          let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
+          if (correctedPath !== '/home' && correctedPath !== '/userguide' && correctedPath !== '') {
+            items.push(correctedPath)
+          }
+        }).on('end', () => {
+          return resolve(items)
+        }).on('error', (err, item) => {
+          console.log(err.message)
+          return resolve(items)
+        })
+      } else if (folderExists) {
+        // If sub-folder exists
+
+        klaw(fPath, {
+          filter: pathItem => {
+            return pathItem.endsWith('.md')
+          }
+        }).on('data', item => {
+          let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
+          if (correctedPath !== '') {
+            items.push(correctedPath)
+          }
+        }).on('end', () => {
+          return resolve(items)
+        }).on('error', (err, item) => {
+          console.log(err.message)
+          return resolve(items)
+        })
+      } else {
+        // If sub-folder not exists
+
         return resolve(items)
-      }).on('error', (err, item) => {
-        console.log(err.message)
-        console.log(items)
-        return resolve(items)
-      })
+      }
     })
   },
 
@@ -255,7 +296,7 @@ module.exports = {
    *
    * @param      {String}            entryPath  The entry path
    * @param      {String}            contents   The markdown-formatted contents
-   * @param {Object} author The author user object
+   * @param      {Object} author The author user object
    * @return     {Promise<Boolean>}  True on success, false on failure
    */
   update(entryPath, contents, author) {
