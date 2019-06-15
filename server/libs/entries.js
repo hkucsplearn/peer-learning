@@ -188,7 +188,7 @@ module.exports = {
         // If sub-folder not exists + Current page is not 'home'
 
         if (realEntryPath === '') {
-          return this.getFolderDirectory(realEntryPath, false)
+          return this.getFolderDirectory(rawEntryPath, false)
         } else {
           return this.getFolderDirectory(realEntryPath, true)
         }
@@ -248,7 +248,7 @@ module.exports = {
         })
       } else {
         // If sub-folder not exists
-
+        items.push('/' + entryPath)
         return resolve(items)
       }
     })
