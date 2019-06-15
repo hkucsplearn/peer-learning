@@ -3,7 +3,7 @@ extends ../layout.pug
 mixin tocMenu(silibingList)
   each item in silibingList
     li
-      a(href=item, title=item)= item
+      a(href=item, title=item)= item.substr(1, item.length + 1)
       //- if node.nodes.length > 0
           ul
             +tocMenu(node.nodes)

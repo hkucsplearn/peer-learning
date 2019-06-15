@@ -246,7 +246,6 @@ router.get('/*', (req, res, next) => {
   entries.fetch(safePath).then((pageData) => {
     if (pageData) {
       entries.getPageSilibing(safePath).then((pageSilibingList) => {
-        console.log(pageSilibingList)
         res.render('pages/view', { pageData, pageSilibingList })
       })
     } else {

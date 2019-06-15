@@ -173,8 +173,6 @@ module.exports = {
    * @return     {Promise<Object>}  All file silibing paths of the current document
    */
   getPageSilibing(rawEntryPath) {
-    console.log(rawEntryPath)
-
     return entryHelper.isFolder(rawEntryPath).then((folderExists) => {
       let realEntryPath = entryHelper.getRootPath(rawEntryPath)
 
@@ -215,8 +213,6 @@ module.exports = {
         // If current page is 'home'
 
         fPath = fPath.replace('\\home', '')
-        console.log(fPath)
-
         klaw(fPath, {
           filter: pathItem => {
             return pathItem.endsWith('.md') && !pathItem.endsWith('README.md')
