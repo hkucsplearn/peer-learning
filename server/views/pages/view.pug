@@ -68,13 +68,14 @@ block content
                   a(href='/' + pageData.parent.path)
                     i.icon-reply
                     span= pageData.parent.title
-          aside.sidebar-pagecontents
-            .sidebar-label
-              span= t('sidebar.pagecontents')
-            ul.sidebar-menu
-              li.is-hidden-until-scroll: a(href='#root', title='Top of Page')
-                i.icon-arrow-up2
-              +tocMenu(pageSilibingList)
+          if !(['userguide'].includes(pageData.meta.path))
+            aside.sidebar-relatedtopics
+              .sidebar-label
+                span= t('sidebar.relatedtopics')
+              ul.sidebar-menu
+                li.is-hidden-until-scroll: a(href='#root', title='Top of Page')
+                  i.icon-arrow-up2
+                +tocMenu(pageSilibingList)
 
         .column
           .hero

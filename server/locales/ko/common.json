@@ -12,7 +12,7 @@
   "sidebar": {
     "nav": "NAV",
     "navigation": "네비게이션",
-    "pagecontents": "페이지 내용",
+    "relatedtopics": "페이지 내용",
     "pastversions": "페이지 버전"
   },
   "nav": {
