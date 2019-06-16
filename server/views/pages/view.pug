@@ -63,7 +63,7 @@ block content
               +displayParentPath(parentList)
           
           .content-options
-            if rights.write && pageData.meta.path !== 'home'
+            if rights.write && !(['home', 'userguide'].includes(pageData.meta.path))
               a.button.is-outlined.is-icon-only(@click='$store.dispatch("modalDeletePage/open")')
                 i.nc-icon-outline.ui-1_trash
               a.button.is-outlined(v-on:click='$store.dispatch("modalMovePage/open")')

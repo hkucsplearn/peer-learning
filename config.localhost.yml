@@ -74,7 +74,10 @@ git:
     type: ssh
     username: ''
     password: ''
-    privateKey: 'C:\Users\Eric\.ssh'
+    # for windows
+    privateKey: 'C:\Users\Eric\.ssh\id_rsa'
+    # for linux/macOS
+    # '/Users/eric/.ssh/id_rsa'
     sslVerify: true
   showUserEmail: true
   serverEmail: chiholau@connect.hku.hk
