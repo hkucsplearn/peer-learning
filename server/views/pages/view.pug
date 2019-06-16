@@ -9,28 +9,6 @@ mixin tocMenu(silibingList)
             +tocMenu(node.nodes)
 
 block rootNavRight
-  loading-spinner
-  .nav-item
-    if rights.write && pageData.meta.path !== 'home'
-      a.button.is-outlined.is-icon-only(@click='$store.dispatch("modalDeletePage/open")')
-        i.nc-icon-outline.ui-1_trash
-      a.button.is-outlined(v-on:click='$store.dispatch("modalMovePage/open")')
-        i.nc-icon-outline.arrows-1_shuffle-98
-        span= t('nav.move')
-    if appconfig.theme.viewSource === 'all' || (rights.write && appconfig.theme.viewSource === 'write')
-      a.button.is-outlined(href='/source/' + pageData.meta.path)
-        i.nc-icon-outline.education_paper
-        span= t('nav.source')
-      a.button.is-outlined(href='/hist/' + pageData.meta.path)
-        i.nc-icon-outline.ui-2_time
-        span= t('nav.history')
-    if rights.write
-      a.button(href='/edit/' + pageData.meta.path)
-        i.nc-icon-outline.ui-1_edit-76
-        span= t('nav.edit')
-      a.button(v-on:click='$store.dispatch("modalCreatePage/open")')
-        i.nc-icon-outline.ui-1_simple-add
-        span= t('nav.create')
 
 block content
   content-view(inline-template)
@@ -78,10 +56,35 @@ block content
                 +tocMenu(pageSilibingList)
 
         .column
+          loading-spinner
+
+          .content-options
+            if rights.write && pageData.meta.path !== 'home'
+              a.button.is-outlined.is-icon-only(@click='$store.dispatch("modalDeletePage/open")')
+                i.nc-icon-outline.ui-1_trash
+              a.button.is-outlined(v-on:click='$store.dispatch("modalMovePage/open")')
+                i.nc-icon-outline.arrows-1_shuffle-98
+                span= t('nav.move')
+            if appconfig.theme.viewSource === 'all' || (rights.write && appconfig.theme.viewSource === 'write')
+              a.button.is-outlined(href='/source/' + pageData.meta.path)
+                i.nc-icon-outline.education_paper
+                span= t('nav.source')
+              a.button.is-outlined(href='/hist/' + pageData.meta.path)
+                i.nc-icon-outline.ui-2_time
+                span= t('nav.history')
+            if rights.write
+              a.button(href='/edit/' + pageData.meta.path)
+                i.nc-icon-outline.ui-1_edit-76
+                span= t('nav.edit')
+              a.button(v-on:click='$store.dispatch("modalCreatePage/open")')
+                i.nc-icon-outline.ui-1_simple-add
+                span= t('nav.create')
+
           .hero
             h1.title#title= pageData.meta.title
             if pageData.meta.subtitle
               h2.subtitle= pageData.meta.subtitle
+
           .content.mkcontent(v-pre, class=[appconfig.theme.code.dark ? 'is-code-dark' : 'is-code-light'])
             != pageData.html
 
