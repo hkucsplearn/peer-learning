@@ -1,12 +1,6 @@
 extends ../layout.pug
 
 block rootNavRight
-  loading-spinner
-  .nav-item
-    if rights.write
-      a.button(v-on:click='$store.dispatch("modalCreatePage/open")')
-        i.nc-icon-outline.ui-1_simple-add
-        span= t('nav.create')
 
 block content
   content-view(inline-template)
@@ -41,6 +35,13 @@ block content
                     span= t('nav.login')
 
         .column
+          loading-spinner
+          .content-options
+            if rights.write
+              a.button(v-on:click='$store.dispatch("modalCreatePage/open")')
+                i.nc-icon-outline.ui-1_simple-add
+                span= t('nav.create')
+
           .hero
             h1.title#title= 'List of All Articles'
             h2.subtitle= 'welcome to create your own article'

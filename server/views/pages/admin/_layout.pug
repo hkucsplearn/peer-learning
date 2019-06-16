@@ -4,11 +4,7 @@ block rootNavCenter
   h2.nav-item= t('nav.settings')
 
 block rootNavRight
-  loading-spinner
-  .nav-item
-    a.button.btn-edit-discard(href='/')
-      i.nc-icon-outline.ui-1_home-minimal
-      span= t('nav.root')
+  
 
 block content
 
@@ -74,4 +70,11 @@ block content
                   span= t('nav.logout')
 
         .column
+          loading-spinner
+
+          .content-options
+            a.button.btn-edit-discard(href='/')
+              i.nc-icon-outline.ui-1_home-minimal
+              span= t('nav.root')
+
           block adminContent
