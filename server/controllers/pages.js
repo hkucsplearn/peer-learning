@@ -246,7 +246,9 @@ router.get('/*', (req, res, next) => {
   entries.fetch(safePath).then((pageData) => {
     if (pageData) {
       entries.getPageSilibing(safePath).then((pageSilibingList) => {
-        res.render('pages/view', { pageData, pageSilibingList })
+        entries.getParentList(safePath).then((parentList) => {
+          res.render('pages/view', { pageData, parentList, pageSilibingList })
+        })
       })
     } else {
       res.status(404).render('error-notexist', {

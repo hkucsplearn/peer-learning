@@ -255,6 +255,36 @@ module.exports = {
   },
 
   /**
+   * Created on 17/06/2019
+   * Obtain all the parent directories of a document
+   *
+   * @param      {String}           rawEntryPath  The entry path
+   * @return     {Promise<Object>}  All parent directories of the current document
+   */
+  getParentList(entryPath) {
+    entryPath = entryPath + '/'
+    let tempPath = entryPath
+    let parentList = []
+
+    return new Promise((resolve, reject) => {
+      while (tempPath.indexOf('/') !== -1) {
+        let parentInfo = {
+          name: '',
+          link: ''
+        }
+        parentInfo.name = tempPath.substr(0, tempPath.indexOf('/'))
+        parentInfo.link = '/' + entryPath.replace(tempPath, '') + tempPath.substr(0, tempPath.indexOf('/'))
+        parentList.push(parentInfo)
+
+        tempPath = tempPath.substr(tempPath.indexOf('/') + 1, tempPath.length)
+      }
+      console.log(parentList)
+
+      return resolve(parentList)
+    })
+  },
+
+  /**
    * Gets the parent information.
    *
    * @param      {String}                 entryPath  The entry path

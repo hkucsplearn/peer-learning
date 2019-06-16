@@ -4,9 +4,11 @@ mixin tocMenu(silibingList)
   each item in silibingList
     li
       a(href=item, title=item)= item.substr(1, item.length + 1)
-      //- if node.nodes.length > 0
-          ul
-            +tocMenu(node.nodes)
+
+mixin displayParentPath(pathList)
+  each item in pathList
+    span= t(' / ')
+    a(href=item.link, title=item.name)= item.name
 
 block rootNavRight
 
@@ -56,8 +58,10 @@ block content
                 +tocMenu(pageSilibingList)
 
         .column
-          loading-spinner
-
+          .current-path
+            h3.subtitle= 'You are now at : ' 
+              +displayParentPath(parentList)
+          
           .content-options
             if rights.write && pageData.meta.path !== 'home'
               a.button.is-outlined.is-icon-only(@click='$store.dispatch("modalDeletePage/open")')
