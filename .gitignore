@@ -41,3 +41,4 @@ test-results/
 
 # VS Code Local History extension
 .history
+.DS_Store
