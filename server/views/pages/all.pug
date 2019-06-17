@@ -23,7 +23,6 @@ block content
                   span= t('nav.allpages')
 
         .column
-          loading-spinner
           .content-options
             if rights.write
               a.button(v-on:click='$store.dispatch("modalCreatePage/open")')
