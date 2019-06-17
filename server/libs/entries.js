@@ -212,7 +212,7 @@ module.exports = {
       if (entryPath === 'home') {
         // If current page is 'home'
 
-        fPath = fPath.replace('\\home', '')
+        fPath = fPath.replace('/home', '')
         klaw(fPath, {
           filter: pathItem => {
             return pathItem.endsWith('.md') && !pathItem.endsWith('README.md')
@@ -225,7 +225,7 @@ module.exports = {
         }).on('end', () => {
           return resolve(items)
         }).on('error', (err, item) => {
-          console.log(err.message)
+          console.error(err.message)
           return resolve(items)
         })
       } else if (folderExists) {
@@ -243,7 +243,7 @@ module.exports = {
         }).on('end', () => {
           return resolve(items)
         }).on('error', (err, item) => {
-          console.log(err.message)
+          console.error(err.message)
           return resolve(items)
         })
       } else {
@@ -278,7 +278,6 @@ module.exports = {
 
         tempPath = tempPath.substr(tempPath.indexOf('/') + 1, tempPath.length)
       }
-      console.log(parentList)
 
       return resolve(parentList)
     })

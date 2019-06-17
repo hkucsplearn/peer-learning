@@ -119,7 +119,7 @@ export default {
           self.draw()
         }
       }).catch(err => {
-        console.log(err)
+        console.error(err)
         self.$store.dispatch('alert', {
           style: 'red',
           icon: 'ui-2_square-remove-09',
