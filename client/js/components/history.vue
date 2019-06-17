@@ -13,7 +13,6 @@
 
       .column
         .history
-          .history-title {{ currentPath }}
           .history-info
             .columns
               .column.history-info-meta

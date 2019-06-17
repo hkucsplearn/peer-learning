@@ -17,3 +17,10 @@
     .nav-right
       block rootNavRight
         loading-spinner
+        .nav-item
+          if isGuest
+            a.button.nav-bar(href='/login')
+              i.nc-icon-outline.arrows-1_log-in
+          else
+            a.button.nav-bar(href='/admin')
+              i.nc-icon-outline.ui-1_settings-gear-63

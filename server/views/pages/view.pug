@@ -10,8 +10,6 @@ mixin displayParentPath(pathList)
     span= t(' / ')
     a(href=item.link, title=item.name)= item.name
 
-block rootNavRight
-
 block content
   content-view(inline-template)
     .container.is-fluid.has-mkcontent
@@ -33,16 +31,6 @@ block content
                 a(href='/all')
                   i.nc-icon-outline.design_bullet-list-68
                   span= t('nav.allpages')
-              if !isGuest
-                li
-                  a(href='/admin')
-                    i.nc-icon-outline.ui-1_settings-gear-63
-                    span= t('nav.settings')
-              else
-                li
-                  a(href='/login')
-                    i.nc-icon-outline.arrows-1_log-in
-                    span= t('nav.login')
               if pageData.parent
                 li
                   a(href='/' + pageData.parent.path)

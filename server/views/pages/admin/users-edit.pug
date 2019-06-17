@@ -1,13 +1,11 @@
 extends ./_layout.pug
 
-block rootNavRight
-  loading-spinner
-  .nav-item
+block adminContent
+  .content-options
     a.button(href='/admin/users')
       i.nc-icon-outline.arrows-2_corner-left-round
       span= t('admin:users.returntousers')
 
-block adminContent
   admin-edit-user(inline-template, usrdata=JSON.stringify(usr))
     div
       .hero

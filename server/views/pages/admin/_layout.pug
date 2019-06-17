@@ -3,9 +3,6 @@ extends ../../layout.pug
 block rootNavCenter
   h2.nav-item= t('nav.settings')
 
-block rootNavRight
-  
-
 block content
 
   #page-type-account
@@ -30,10 +27,6 @@ block content
                 a(href='/all')
                   i.nc-icon-outline.design_bullet-list-68
                   span= t('nav.allpages')
-              li
-                a(href='/admin')
-                  i.nc-icon-outline.ui-1_settings-gear-63
-                  span= t('nav.settings')
 
           aside
             .sidebar-label
@@ -71,10 +64,4 @@ block content
 
         .column
           loading-spinner
-
-          .content-options
-            a.button.btn-edit-discard(href='/')
-              i.nc-icon-outline.ui-1_home-minimal
-              span= t('nav.root')
-
           block adminContent

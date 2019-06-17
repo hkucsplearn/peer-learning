@@ -1,8 +1,11 @@
 extends ../layout.pug
 
+block rootNavCenter
+  h2.nav-item= pageData.meta.title
+
 block rootNavRight
-  i.nav-item#notifload
-  .nav-item
+  loading-spinner
+  span.nav-item
     a.button(href='/' + pageData.meta._id)
       i.nc-icon-outline.ui-3_select
       span= t('nav.viewlatest')
