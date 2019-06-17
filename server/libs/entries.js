@@ -219,7 +219,7 @@ module.exports = {
           }
         }).on('data', item => {
           let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
-          if (correctedPath !== '/home' && correctedPath !== '/userguide' && correctedPath !== '') {
+          if (correctedPath !== '/home' && correctedPath !== '/guide' && correctedPath !== '') {
             items.push(correctedPath)
           }
         }).on('end', () => {

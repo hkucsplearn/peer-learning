@@ -146,7 +146,7 @@ router.use((req, res, next) => {
     entries.getAllArticlePath(req.user)
       .then(data => {
         data = data.map(d => '/' + d._id.toString())
-        const pageData = data.filter(d => d !== '/home' && d !== '/userguide')
+        const pageData = data.filter(d => d !== '/home' && d !== '/guide')
         res.render('pages/all', { pageData })
         return true
       })

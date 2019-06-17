@@ -24,9 +24,9 @@ block content
                   i.nc-icon-outline.ui-1_home-minimal
                   span= t('nav.root')
               li
-                a(href='/userguide')
+                a(href='/guide')
                   i.nc-icon-outline.location_compass-04
-                  span= t('nav.userguide')
+                  span= 'Guide'
               li
                 a(href='/all')
                   i.nc-icon-outline.design_bullet-list-68
@@ -50,7 +50,7 @@ block content
               +displayParentPath(parentList)
           
           .content-options
-            if rights.write && !(['home', 'userguide'].includes(pageData.meta.path))
+            if rights.write && !(['home', 'guide'].includes(pageData.meta.path))
               a.button.is-outlined.is-icon-only(@click='$store.dispatch("modalDeletePage/open")')
                 i.nc-icon-outline.ui-1_trash
               a.button.is-outlined(v-on:click='$store.dispatch("modalMovePage/open")')
