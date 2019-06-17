@@ -17,10 +17,18 @@
     .nav-right
       block rootNavRight
         loading-spinner
+        if !isGuest
+          .nav-item
+            .current-user
+              span.username #{user.name}
+              br
+              span.email (#{user.email})
         .nav-item
           if isGuest
             a.button.nav-bar(href='/login')
               i.nc-icon-outline.arrows-1_log-in
+              span= t('nav.login')
           else
             a.button.nav-bar(href='/admin')
               i.nc-icon-outline.ui-1_settings-gear-63
+              span= t('nav.settings')
