@@ -14,7 +14,8 @@
 }
 
 #notifload {
-  height: 1px;
+  margin: 5px 5px 5px 5px;
+  height: 42px;
 	width: 42px;
 	display: flex;
 	justify-content: center;
@@ -24,7 +25,7 @@
 
 	&::before {
 		content: " ";
-		@include spinner(mc('indigo', '100'),0.5s,24px);
+		@include spinner(mc('teal', '100'),0.5s,24px);
 	}
 
 	&.is-active {
