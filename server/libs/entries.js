@@ -212,7 +212,7 @@ module.exports = {
       if (entryPath === 'home') {
         // If current page is 'home'
 
-        fPath = fPath.replace('\\home', '').replace('/home', '') // former replace for windows, latter replace for Unix
+        fPath = fPath.replace(/\\home$/, '').replace(/\/home$/, '') // former replace for windows, latter replace for Unix
         klaw(fPath, {
           filter: pathItem => {
             return pathItem.endsWith('.md') && !pathItem.endsWith('README.md')
