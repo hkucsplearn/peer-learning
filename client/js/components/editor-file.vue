@@ -11,7 +11,7 @@
                 i.nc-icon-outline.arrows-1_cloud-upload-94
                 span {{ (mode === 'file') ? $t('editor.fileupload') : $t('editor.imageupload') }}
                 label
-                  input(type='file', multiple, :disabled='isLoading', ref='editorFileUploadInput')
+                  input(id='fileInput', type='file', :disabled='isLoading', ref='editorFileUploadInput')
               a.button(v-if='mode === "image"', @click='fetchFromUrl')
                 i.nc-icon-outline.arrows-1_cloud-download-93
                 span Fetch from URL
@@ -505,13 +505,13 @@
           }
         })
       },
+
       upload() {
         let self = this
         let curFileAmount = this.files.length
         let uplUrl = (self.mode === 'image') ? '/uploads/img' : '/uploads/file'
-        console.log(this.files)
 
-        $(this.$refs.editorFileUploadInput).simpleUpload(uplUrl, {
+        $('#fileInput').simpleUpload(uplUrl, {
 
           name: (self.mode === 'image') ? 'imgfile' : 'binfile',
           data: {
