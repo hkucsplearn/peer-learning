@@ -18,6 +18,12 @@
             section.is-gapless
               .columns.is-stretched
                 .column.is-one-quarter.modal-sidebar.is-green(style={'max-width':'350px'})
+                  .model-sidebar-header {{ $t('editor.folders') }}
+                  ul.model-sidebar-list
+                    li(v-for='fld in folders')
+                      a(@click='selectFolder(fld)', :class='{ "is-active": currentFolder === fld }')
+                        i.nc-icon-outline.files_folder-17
+                        span / {{ fld }}
                   .model-sidebar-header(v-if='mode === "image"') Alignment
                   .model-sidebar-content(v-if='mode === "image"')
                     p.control.is-fullwidth

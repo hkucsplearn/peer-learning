@@ -52,11 +52,12 @@ block content
           .content-bar
 
             .last-edit
-              span.title= 'Last Edit:'
-              .info
-                span= pageData.lastEdit.authorName + ' <' + pageData.lastEdit.authorEmail + '>'
-                br
+              .date
+                span= 'Last edited '
                 span= pageData.lastEdit.dateFull
+              .author
+                span= 'By '
+                span= `${pageData.lastEdit.authorName} <${pageData.lastEdit.authorEmail}>`
 
             .content-options
               if rights.write && !(['home', 'guide'].includes(pageData.meta.path))
