@@ -509,6 +509,7 @@
         let self = this
         let curFileAmount = this.files.length
         let uplUrl = (self.mode === 'image') ? '/uploads/img' : '/uploads/file'
+        console.log(this.files)
 
         $(this.$refs.editorFileUploadInput).simpleUpload(uplUrl, {
 
@@ -519,7 +520,7 @@
           limit: 20,
           expect: 'json',
           allowedExts: (self.mode === 'image') ? ['jpg', 'jpeg', 'gif', 'png', 'webp'] : undefined,
-          allowedTypes: (self.mode === 'image') ? ['image/png', 'image/jpeg', 'image/gif', 'image/webp'] : undefined,
+          allowedTypes: (self.mode === 'image') ? ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/webp'] : undefined,
           maxFileSize: (self.mode === 'image') ? 3145728 : 0, // max 3 MB
 
           init: (totalUploads) => {
