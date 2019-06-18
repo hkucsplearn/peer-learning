@@ -247,7 +247,10 @@ router.get('/*', (req, res, next) => {
     if (pageData) {
       entries.getPageSilibing(safePath).then((pageSilibingList) => {
         entries.getParentList(safePath).then((parentList) => {
-          res.render('pages/view', { pageData, parentList, pageSilibingList })
+          entries.getLastEdit(safePath).then((lastEdit) => {
+            pageData.lastEdit = lastEdit
+            res.render('pages/view', { pageData, parentList, pageSilibingList })
+          })
         })
       })
     } else {

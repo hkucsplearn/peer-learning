@@ -285,10 +285,18 @@ module.exports = {
     })
   },
 
+  getLastEdit(entryPath) {
+    return this.getCommitRecord(entryPath, 1)
+  },
+
   getHistory(entryPath) {
+    return this.getCommitRecord(entryPath, 25)
+  },
+
+  getCommitRecord(entryPath, maxCount) {
     let self = this
     let gitFilePath = entryPath + '.md'
-    return self._git.exec('log', ['--max-count=25', '--format=format:%H;%h;%cI;%cE;%cN;%aE;%aN', '--', gitFilePath]).then((cProc) => {
+    return self._git.exec('log', [`--max-count=${maxCount}`, '--format=format:%H;%h;%cI;%cE;%cN;%aE;%aN', '--', gitFilePath]).then((cProc) => {
       let out = cProc.stdout.toString()
       if (_.includes(out, 'fatal')) {
         let errorMsg = _.capitalize(_.head(_.split(_.replace(out, 'fatal: ', ''), ',')))

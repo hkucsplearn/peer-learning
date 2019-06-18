@@ -49,27 +49,36 @@ block content
             h3.subtitle= 'You are now at : ' 
               +displayParentPath(parentList)
           
-          .content-options
-            if rights.write && !(['home', 'guide'].includes(pageData.meta.path))
-              a.button.is-outlined.is-icon-only(@click='$store.dispatch("modalDeletePage/open")')
-                i.nc-icon-outline.ui-1_trash
-              a.button.is-outlined(v-on:click='$store.dispatch("modalMovePage/open")')
-                i.nc-icon-outline.arrows-1_shuffle-98
-                span= t('nav.move')
-            if appconfig.theme.viewSource === 'all' || (rights.write && appconfig.theme.viewSource === 'write')
-              a.button.is-outlined(href='/source/' + pageData.meta.path)
-                i.nc-icon-outline.education_paper
-                span= t('nav.source')
-              a.button.is-outlined(href='/hist/' + pageData.meta.path)
-                i.nc-icon-outline.ui-2_time
-                span= t('nav.history')
-            if rights.write
-              a.button(href='/edit/' + pageData.meta.path)
-                i.nc-icon-outline.ui-1_edit-76
-                span= t('nav.edit')
-              a.button(v-on:click='$store.dispatch("modalCreatePage/open")')
-                i.nc-icon-outline.ui-1_simple-add
-                span= t('nav.create')
+          .content-bar
+
+            .last-edit
+              span.title= 'Last Edit:'
+              .info
+                span= pageData.lastEdit.authorName + ' <' + pageData.lastEdit.authorEmail + '>'
+                br
+                span= pageData.lastEdit.dateFull
+
+            .content-options
+              if rights.write && !(['home', 'guide'].includes(pageData.meta.path))
+                a.button.is-outlined.is-icon-only(@click='$store.dispatch("modalDeletePage/open")')
+                  i.nc-icon-outline.ui-1_trash
+                a.button.is-outlined(v-on:click='$store.dispatch("modalMovePage/open")')
+                  i.nc-icon-outline.arrows-1_shuffle-98
+                  span= t('nav.move')
+              if appconfig.theme.viewSource === 'all' || (rights.write && appconfig.theme.viewSource === 'write')
+                a.button.is-outlined(href='/source/' + pageData.meta.path)
+                  i.nc-icon-outline.education_paper
+                  span= t('nav.source')
+                a.button.is-outlined(href='/hist/' + pageData.meta.path)
+                  i.nc-icon-outline.ui-2_time
+                  span= t('nav.history')
+              if rights.write
+                a.button(href='/edit/' + pageData.meta.path)
+                  i.nc-icon-outline.ui-1_edit-76
+                  span= t('nav.edit')
+                a.button(v-on:click='$store.dispatch("modalCreatePage/open")')
+                  i.nc-icon-outline.ui-1_simple-add
+                  span= t('nav.create')
 
           .hero
             h1.title#title= pageData.meta.title
