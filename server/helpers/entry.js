@@ -70,7 +70,7 @@ module.exports = {
    * @return     {String}  The full path.
    */
   getUploadFullPath (entryPath) {
-    return path.join(appdata.repoPath, '/uploads' + entryPath)
+    return path.join(appdata.repoPath, '\\uploads\\' + entryPath)
   },
 
   /**

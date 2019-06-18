@@ -462,9 +462,15 @@ module.exports = {
    */
   makePersistent(entryPath, contents, author) {
     let fpath = entryHelper.getFullPath(entryPath)
+    let upathShort = 'uploads/' + entryPath + '/initializeFolder'
+    let upath = entryHelper.getUploadFullPath(entryPath) + '\\initializeFolder.md'
 
     return fs.outputFileAsync(fpath, contents).then(() => {
-      return git.commitDocument(entryPath, author)
+      return fs.outputFileAsync(upath, 'At the time you see this file, it has no use. Feel free to delete this file!').then(() => {
+        return git.commitDocument(entryPath, author).then(() => {
+          return git.commitDocument(upathShort, author)
+        })
+      })
     })
   },
 
@@ -518,6 +524,8 @@ module.exports = {
       return Promise.reject(new Error(lang.t('errors:invalidpath')))
     }
 
+    let upathShort = 'uploads/' + entryPath
+
     return git.deleteDocument(entryPath, author).then(() => {
       // Delete old cache version
 
@@ -528,7 +536,11 @@ module.exports = {
       search.delete(entryPath)
 
       // Delete entry
-      return db.Entry.deleteOne({ _id: entryPath })
+      return db.Entry.deleteOne({ _id: entryPath }).then(() => {
+        return git.deleteFolder(upathShort, author).then(() => {
+          fs.unlinkAsync(upathShort).catch((err) => { return true }) // eslint-disable-line handle-callback-err
+        })
+      })
     })
   },
 

@@ -41,7 +41,6 @@ router.post('/img', lcdata.uploadImgHandler, (req, res, next) => {
   let destFolder = _.chain(req.body.folder).trim().toLower().value()
 
   upl.validateUploadsFolder(destFolder).then((destFolderPath) => {
-    console.log(destFolderPath)
     if (!destFolderPath) {
       res.json({ ok: false, msg: lang.t('errors:invalidfolder') })
       return true
