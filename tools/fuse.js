@@ -137,7 +137,6 @@ globalTasks.then(() => {
     console.info(colors.green.bold('\nAssets compilation + bundling completed.'))
 
     if (dev) {
-      console.info('Running on development mode')
       nodemon({
         exec: (args.d) ? 'node server' : 'node wiki configure',
         ignore: ['assets/', 'client/', 'data/', 'repo/', 'tests/'],
@@ -146,7 +145,6 @@ globalTasks.then(() => {
         env: { 'NODE_ENV': 'development' }
       })
     } else {
-      console.info('Running on production mode')
       console.info(colors.yellow.bold('\nTranspiling vendor bundle...'))
       let appCode = babel.transform(fs.readFileSync('./assets/js/app.js', 'utf8'), {
         babelrc: false,

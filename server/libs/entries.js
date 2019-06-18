@@ -219,7 +219,7 @@ module.exports = {
           }
         }).on('data', item => {
           let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
-          if (correctedPath !== '/home' && correctedPath !== '/guide' && correctedPath !== '') {
+          if (!(['/home', '/guide', ''].includes(correctedPath))) {
             items.push(correctedPath)
           }
         }).on('end', () => {
@@ -577,6 +577,15 @@ module.exports = {
           meta: entry,
           history
         }
+      })
+    })
+  },
+
+  getLastEdit(entryPath) {
+    return db.Entry.findOne({ _id: entryPath, isEntry: true }).then(entry => {
+      if (!entry) { return false }
+      return git.getLastEdit(entryPath).then(history => {
+        return history[0]
       })
     })
   }

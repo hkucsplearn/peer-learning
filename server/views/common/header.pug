@@ -17,12 +17,14 @@
     .nav-right
       block rootNavRight
         loading-spinner
+
         if !isGuest
           .nav-item
             .current-user
               span.username #{user.name}
               br
               span.email (#{user.email})
+
         .nav-item
           if isGuest
             a.button.nav-bar(href='/login')
