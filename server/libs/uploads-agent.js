@@ -12,7 +12,10 @@ const crypto = require('crypto')
 const chokidar = require('chokidar')
 const jimp = require('jimp')
 const imageSize = Promise.promisify(require('image-size'))
+const klaw = require('klaw')
+const through2 = require('through2')
 const _ = require('lodash')
+const entryHelper = require('../helpers/entry')
 
 /**
  * Uploads - Agent
@@ -43,14 +46,19 @@ module.exports = {
    *
    * @return     {Void}  Void
    */
-  watch () {
+  watch (destFolderPath) {
     let self = this
+    let specificPath = self._uploadsPath
 
-    self._watcher = chokidar.watch(self._uploadsPath, {
+    if (destFolderPath !== '') {
+      specificPath = destFolderPath
+    }
+
+    self._watcher = chokidar.watch(specificPath, {
       persistent: true,
       ignoreInitial: true,
-      cwd: self._uploadsPath,
-      depth: 1,
+      cwd: specificPath,
+      depth: Math.pow(10, 1000),
       awaitWriteFinish: true
     })
 
@@ -73,7 +81,7 @@ module.exports = {
   },
 
   /**
-   * Initial Uploads scan
+   * Initial Uploads scan (Whole Folder)
    *
    * @return     {Promise<Void>}  Promise of the scan operation
    */
@@ -83,14 +91,28 @@ module.exports = {
     return fs.readdirAsync(self._uploadsPath).then((ls) => {
       // Get all folders
 
-      return Promise.map(ls, (f) => {
-        return fs.statAsync(path.join(self._uploadsPath, f)).then((s) => { return { filename: f, stat: s } })
-      }).filter((s) => { return s.stat.isDirectory() }).then((arrDirs) => {
-        let folderNames = _.map(arrDirs, 'filename')
-        folderNames.unshift('')
+      return new Promise((resolve, reject) => {
+        let items = []
+        const includeDirFilter = through2.obj(function (item, enc, next) {
+          if (item.stats.isDirectory()) this.push(item)
+          next()
+        })
 
+        klaw(self._uploadsPath)
+          .pipe(includeDirFilter)
+          .on('data', function (item) {
+            let correctedPath = entryHelper.getEntryPathFromFullPath(item.path).replace('/uploads', '')
+            correctedPath = correctedPath.substr(1, correctedPath.length)
+            items.push(correctedPath)
+          }).on('end', () => {
+            return resolve(items)
+          }).on('error', (err, item) => {
+            global.winston.error(err)
+          })
+      }).then((folders) => {
         // Add folders to DB
 
+        let folderNames = folders
         return db.UplFolder.remove({}).then(() => {
           return db.UplFolder.insertMany(_.map(folderNames, (f) => {
             return {
@@ -107,7 +129,7 @@ module.exports = {
             let fldPath = path.join(self._uploadsPath, fldName)
             return fs.readdirAsync(fldPath).then((fList) => {
               return Promise.map(fList, (f) => {
-                return upl.processFile(fldName, f).then((mData) => {
+                return self.processFile(fldName, f).then((mData) => {
                   if (mData) {
                     allFiles.push(mData)
                   }
@@ -131,7 +153,7 @@ module.exports = {
     }).then(() => {
       // Watch for new changes
 
-      return upl.watch()
+      return self.watch('')
     })
   },
 

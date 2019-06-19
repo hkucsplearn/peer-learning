@@ -151,7 +151,7 @@ export default {
           {
             name: 'image',
             action: (editor) => {
-              self.$store.dispatch('editorFile/open', { mode: 'image' })
+              self.$store.dispatch('editorFile/open', { mode: 'image', uploadFolder: self.currentPath })
             },
             className: 'nc-icon-outline design_image',
             title: 'Insert Image'
@@ -159,7 +159,7 @@ export default {
           {
             name: 'file',
             action: (editor) => {
-              self.$store.dispatch('editorFile/open', { mode: 'file' })
+              self.$store.dispatch('editorFile/open', { mode: 'file', uploadFolder: self.currentPath })
             },
             className: 'nc-icon-outline files_zip-54',
             title: 'Insert File'

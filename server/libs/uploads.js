@@ -9,6 +9,7 @@ const request = require('request')
 const url = require('url')
 const crypto = require('crypto')
 const _ = require('lodash')
+var uplAgent = require('../libs/uploads-agent')
 
 var regFolderName = new RegExp('^[a-z0-9][a-z0-9-]*[a-z0-9]$')
 const maxDownloadFileSize = 3145728 // 3 MB
@@ -113,10 +114,12 @@ module.exports = {
    * @return     {Array<Object>}  The files matching the query
    */
   getUploadsFiles (cat, fld) {
-    return db.UplFile.find({
-      category: cat,
-      folder: 'f:' + fld
-    }).sort('filename').exec()
+    return uplAgent.initialScan().then(() => {
+      return db.UplFile.find({
+        category: cat,
+        folder: 'f:' + fld
+      }).sort('filename').exec()
+    })
   },
 
   /**

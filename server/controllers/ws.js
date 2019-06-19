@@ -4,6 +4,7 @@
 /* eslint-disable standard/no-callback-literal */
 
 const _ = require('lodash')
+const uplAgent = require('../libs/uploads-agent').init()
 
 module.exports = (socket) => {
   // Check if Guest

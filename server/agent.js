@@ -122,38 +122,41 @@ global.db.onReady.then(() => {
           if (path.extname(item.path) === '.md' && path.basename(item.path) !== 'README.md') {
             let entryPath = entryHelper.parsePath(entryHelper.getEntryPathFromFullPath(item.path))
             let cachePath = entryHelper.getCachePath(entryPath)
+            let check = entryPath.substr(0, 7)
 
             // -> Purge outdated cache
 
-            cacheJobs.push(
-              fs.statAsync(cachePath).then((st) => {
-                return moment(st.mtime).isBefore(item.stats.mtime) ? 'expired' : 'active'
-              }).catch((err) => {
-                return (err.code !== 'EEXIST') ? err : 'new'
-              }).then((fileStatus) => {
-                // -> Delete expired cache file
+            if (check !== 'uploads') {
+              cacheJobs.push(
+                fs.statAsync(cachePath).then((st) => {
+                  return moment(st.mtime).isBefore(item.stats.mtime) ? 'expired' : 'active'
+                }).catch((err) => {
+                  return (err.code !== 'EEXIST') ? err : 'new'
+                }).then((fileStatus) => {
+                  // -> Delete expired cache file
 
-                if (fileStatus === 'expired') {
-                  return fs.unlinkAsync(cachePath).return(fileStatus)
-                }
+                  if (fileStatus === 'expired') {
+                    return fs.unlinkAsync(cachePath).return(fileStatus)
+                  }
 
-                return fileStatus
-              }).then((fileStatus) => {
-                // -> Update cache and search index
+                  return fileStatus
+                }).then((fileStatus) => {
+                  // -> Update cache and search index
 
-                if (fileStatus !== 'active') {
-                  return global.entries.updateCache(entryPath).then(entry => {
-                    process.send({
-                      action: 'searchAdd',
-                      content: entry
+                  if (fileStatus !== 'active') {
+                    return global.entries.updateCache(entryPath).then(entry => {
+                      process.send({
+                        action: 'searchAdd',
+                        content: entry
+                      })
+                      return true
                     })
-                    return true
-                  })
-                }
+                  }
 
-                return true
-              })
-            )
+                  return true
+                })
+              )
+            }
           }
         }).on('error', (err, item) => {
           global.winston.error(err)
