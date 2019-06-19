@@ -146,6 +146,9 @@
       },
       mode () {
         return this.$store.state.editorFile.mode
+      },
+      uploadFolder () {
+        return this.$store.state.editorFile.uploadFolder
       }
     },
     methods: {
@@ -392,6 +395,7 @@
         this.$nextTick(() => {
           socket.emit('uploadsGetFolders', { }, (data) => {
             self.folders = data
+            self.currentFolder = self.uploadFolder
             self.loadFiles()
           })
         })
@@ -574,6 +578,7 @@
 
           finish: () => {
             if (self.uploadSucceeded) {
+
               self.waitChangeComplete(curFileAmount, true)
             } else {
               self.isLoading = false

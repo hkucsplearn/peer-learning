@@ -375,6 +375,7 @@ module.exports = {
       return err
     }).then((content) => {
       let parentPath = _.chain(content.entryPath).split('/').initial().join('/').value()
+
       return db.Entry.findOneAndUpdate({
         _id: content.entryPath
       }, {
@@ -414,6 +415,7 @@ module.exports = {
         return Promise.map(allPaths, pathItem => {
           let parentPath = _.chain(pathItem).split('/').initial().join('/').value()
           let guessedTitle = _.chain(pathItem).split('/').last().startCase().value()
+
           return db.Entry.update({ _id: pathItem }, {
             $set: { isDirectory: true },
             $setOnInsert: { isEntry: false, title: guessedTitle, parentPath }
@@ -462,13 +464,22 @@ module.exports = {
    */
   makePersistent(entryPath, contents, author) {
     let fpath = entryHelper.getFullPath(entryPath)
-    let upathShort = 'uploads/' + entryPath + '/initializeFolder'
-    let upath = entryHelper.getUploadFullPath(entryPath) + '\\initializeFolder.md'
+    let upathDB = entryPath
+    let upathInitShort = 'uploads/' + entryPath + '/initializeFolder'
+    let upathInit = entryHelper.getUploadFullPath(entryPath) + '\\initializeFolder.md'
 
     return fs.outputFileAsync(fpath, contents).then(() => {
-      return fs.outputFileAsync(upath, 'At the time you see this file, it has no use. Feel free to delete this file!').then(() => {
+      return fs.outputFileAsync(upathInit, 'At the time you see this file, it has no use. Feel free to delete this file!').then(() => {
         return git.commitDocument(entryPath, author).then(() => {
-          return git.commitDocument(upathShort, author)
+          return git.commitDocument(upathInitShort, author).then(() => {
+            return db.UplFolder.findOneAndUpdate({
+              _id: 'f:' + upathDB
+            }, {
+              name: upathDB
+            }, {
+              upsert: true
+            })
+          })
         })
       })
     })
@@ -537,8 +548,10 @@ module.exports = {
 
       // Delete entry
       return db.Entry.deleteOne({ _id: entryPath }).then(() => {
-        return git.deleteFolder(upathShort, author).then(() => {
-          fs.unlinkAsync(upathShort).catch((err) => { return true }) // eslint-disable-line handle-callback-err
+        return db.UplFolder.deleteOne({ _id: 'f:' + entryPath }).then(() => {
+          return git.deleteFolder(upathShort, author).then(() => {
+            fs.unlinkAsync(upathShort).catch((err) => { return true }) // eslint-disable-line handle-callback-err
+          })
         })
       })
     })
