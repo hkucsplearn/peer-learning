@@ -4,33 +4,32 @@
     .nav-left
       block rootNavLeft
         a.nav-item(href='/')
-          h1
+          h1.is-hidden-mobile
             i.nc-icon-outline.ui-2_layers
-            = appconfig.title
-    .nav-center
+            span.title= appconfig.title
+          h3.only-show-for-mobile
+            i.nc-icon-outline.ui-2_layers
+            span.title= appconfig.title
+    .nav-center.is-hidden-mobile.only-show-for-mobile
       block rootNavCenter
         search
-    span.nav-toggle
-      span
-      span
-      span
     .nav-right
       block rootNavRight
-        loading-spinner
+        .is-hidden-mobile
+          loading-spinner
 
-        if !isGuest
+        if isGuest
+          .nav-item
+            a.button.nav-bar(href='/login')
+              i.nc-icon-outline.arrows-1_log-in
+              span= t('nav.login')
+        else
           .nav-item
             .current-user
               span.username #{user.name}
               br
-              span.email (#{user.email})
-
-        .nav-item
-          if isGuest
-            a.button.nav-bar(href='/login')
-              i.nc-icon-outline.arrows-1_log-in
-              span= t('nav.login')
-          else
+              span.email #{user.email}
+          .nav-item
             a.button.nav-bar(href='/admin')
               i.nc-icon-outline.ui-1_settings-gear-63
               span= t('nav.settings')

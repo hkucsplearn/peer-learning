@@ -76,8 +76,8 @@ let jobIsBusy = false
 let jobUplWatchStarted = false
 
 global.db.onReady.then(() => {
-//   return global.db.Entry.remove({})
-// }).then(() => {
+  return global.db.Entry.remove({})
+}).then(() => {
   job = new Cron({
     cronTime: '0 */5 * * * *',
     onTick: () => {

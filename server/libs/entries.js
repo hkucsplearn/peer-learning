@@ -581,9 +581,22 @@ module.exports = {
     })
   },
 
-  getHistory(entryPath) {
+  getHistory(entryPath, repeat) {
     return db.Entry.findOne({ _id: entryPath, isEntry: true }).then(entry => {
-      if (!entry) { return false }
+      if (!entry) {
+        if (repeat === undefined) {
+          // try to update db via cache
+          this.updateCache(entryPath)
+            .then(_ => {
+              return this.getHistory(entryPath, true)
+            })
+            .catch(err => {
+              winston.error(err)
+            })
+        } else {
+          return false
+        }
+      }
       return git.getHistory(entryPath).then(history => {
         return {
           meta: entry,
@@ -593,9 +606,22 @@ module.exports = {
     })
   },
 
-  getLastEdit(entryPath) {
+  getLastEdit(entryPath, repeat) {
     return db.Entry.findOne({ _id: entryPath, isEntry: true }).then(entry => {
-      if (!entry) { return false }
+      if (!entry) {
+        if (repeat === undefined) {
+          // try to update db via cache
+          this.updateCache(entryPath)
+            .then(_ => {
+              return this.getLastEdit(entryPath, true)
+            })
+            .catch(err => {
+              winston.error(err)
+            })
+        } else {
+          return false
+        }
+      }
       return git.getLastEdit(entryPath).then(history => {
         return history[0]
       })

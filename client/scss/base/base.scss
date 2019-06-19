@@ -95,7 +95,7 @@ a {
   }
 }
 
-.is-hidden-tablet {
+.only-show-for-mobile {
   @include tablet {
     display: none !important;
   }

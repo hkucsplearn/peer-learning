@@ -46,12 +46,13 @@ block content
 
         .column
           .current-path
-            h3.subtitle= 'You are now at : ' 
+            h3.subtitle
+              i.nc-icon-outline.location_position-pin
               +displayParentPath(parentList)
           
           .content-bar
 
-            .last-edit
+            .last-edit.is-hidden-mobile
               .date
                 span= 'Last edited '
                 span= pageData.lastEdit.dateFull
@@ -59,7 +60,7 @@ block content
                 span= 'By '
                 span= `${pageData.lastEdit.authorName} <${pageData.lastEdit.authorEmail}>`
 
-            .content-options
+            .content-options.is-hidden-mobile
               if rights.write && !(['home', 'guide'].includes(pageData.meta.path))
                 a.button.is-outlined.is-icon-only(@click='$store.dispatch("modalDeletePage/open")')
                   i.nc-icon-outline.ui-1_trash
@@ -80,6 +81,13 @@ block content
                 a.button(v-on:click='$store.dispatch("modalCreatePage/open")')
                   i.nc-icon-outline.ui-1_simple-add
                   span= t('nav.create')
+            .content-options.only-show-for-mobile
+              a.button.is-outlined(href='/source/' + pageData.meta.path)
+                i.nc-icon-outline.education_paper
+                span= t('nav.source')
+              a.button(href='/all')
+                i.nc-icon-outline.design_bullet-list-68
+                span= 'All Articles'
 
           .hero
             h1.title#title= pageData.meta.title
