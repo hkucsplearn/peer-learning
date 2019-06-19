@@ -17,7 +17,7 @@ Documentation: https://docs-legacy.requarks.io/
 
 # Configuring Server
 
-`cp ./config.server.yml ./config.yml` (the server only recognizes config.yml)
+`cp ./deploy/config.server.yml ./config.yml` (the server only recognizes config.yml)
 
 `yarn run dev-configure` (run config to test the settings and create admin user)
 
@@ -44,7 +44,7 @@ A local git Repository is used to to store the articles content and change histo
 
 ```
 (ssh to server)
-(copy deployUpdates.sh from repository to working directory if not yet)
+(copy deploy/deployUpdates.sh from repository to working directory if not yet)
 sudo bash ./deployUpdates.sh
 ```
 
@@ -54,7 +54,7 @@ sudo bash ./deployUpdates.sh
 (install and config nginx)
 sudo apt update
 sudo apt install nginx
-sudo cp -f ./nginx.conf /etc/nginx/sites-available/default
+sudo cp -f ./deploy/nginx.conf /etc/nginx/sites-available/default
 sudo nginx -t
 sudo systemctl enable nginx
 sudo systemctl restart nginx
