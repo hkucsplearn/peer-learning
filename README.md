@@ -43,9 +43,8 @@ A local git Repository is used to to store the articles content and change histo
 # Deploy update to server
 
 ```
-(ssh to server)
-(copy deploy/deployUpdates.sh from repository to working directory if not yet)
-sudo bash ./deployUpdates.sh
+(ssh to server and cd to local repository)
+sudo bash ./deploy/deployUpdates.sh
 ```
 
 # Set up reverse proxy and certbot for https access
