@@ -19,7 +19,7 @@ Documentation: https://docs-legacy.requarks.io/
 
 `cp ./config.server.yml ./config.yml` (the server only recognizes config.yml)
 
-`yarn run config` (run config to test the settings and create admin user)
+`yarn run dev-configure` (run config to test the settings and create admin user)
 
 A local git Repository is used to to store the articles content and change history. The configuration will ask you to specify a remote git repository, which the local git repo will sync with, and information to access the remote git repo, but you can skip this part to use local git repository only. Related information: [Connecting to GitHub with SSH](https://help.github.com/en/articles/connecting-to-github-with-ssh)
 

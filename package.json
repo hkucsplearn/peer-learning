@@ -7,7 +7,6 @@
     "start": "node wiki start",
     "stop": "node wiki stop",
     "restart": "node wiki restart",
-    "config": "node wiki configure",
     "build": "node tools/fuse",
     "dev": "node tools/fuse -d",
     "dev-configure": "node tools/fuse -c",
