@@ -254,8 +254,34 @@ module.exports = {
   deleteDocument(entryPath, author) {
     let self = this
     let gitFilePath = entryPath + '.md'
+    console.log(gitFilePath)
 
     return this._git.exec('rm', [gitFilePath]).then((cProc) => {
+      let out = cProc.stdout.toString()
+      if (_.includes(out, 'fatal')) {
+        let errorMsg = _.capitalize(_.head(_.split(_.replace(out, 'fatal: ', ''), ',')))
+        throw new Error(errorMsg)
+      }
+      let commitUsr = securityHelper.sanitizeCommitUser(author)
+      return self._git.exec('commit', ['-m', lang.t('git:deleted', { path: gitFilePath }), '--author="' + commitUsr.name + ' <' + commitUsr.email + '>"']).catch((err) => {
+        if (_.includes(err.stdout, 'nothing to commit')) { return true }
+      })
+    })
+  },
+
+  /**
+   * Created on 19/06/2019
+   * Delete a folder.
+   *
+   * @param      {String}            entryPath     The entry path
+   * @return     {Promise<Boolean>}  Resolve on success
+   */
+  deleteFolder(entryPath, author) {
+    let self = this
+    let gitFilePath = entryPath
+    console.log(entryPath)
+
+    return this._git.exec('rm', ['-rf', [gitFilePath]]).then((cProc) => {
       let out = cProc.stdout.toString()
       if (_.includes(out, 'fatal')) {
         let errorMsg = _.capitalize(_.head(_.split(_.replace(out, 'fatal: ', ''), ',')))

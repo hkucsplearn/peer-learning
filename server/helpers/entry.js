@@ -64,6 +64,16 @@ module.exports = {
   },
 
   /**
+   * Gets the full upload path of a document.
+   *
+   * @param      {String}  entryPath  The entry path
+   * @return     {String}  The full path.
+   */
+  getUploadFullPath (entryPath) {
+    return path.join(appdata.repoPath, '\\uploads\\' + entryPath)
+  },
+
+  /**
    * Gets the full cache path of a document.
    *
    * @param      {String}  entryPath  The entry path
