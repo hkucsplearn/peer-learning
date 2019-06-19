@@ -44,7 +44,7 @@ A local git Repository is used to to store the articles content and change histo
 (install and config nginx)
 sudo apt update
 sudo apt install nginx
-cp -f ./nginx.conf /etc/nginx/sites-available/default
+sudo cp -f ./nginx.conf /etc/nginx/sites-available/default
 sudo nginx -t
 sudo systemctl enable nginx
 sudo systemctl restart nginx
