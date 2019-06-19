@@ -454,6 +454,6 @@ module.exports = (port, spinner) => {
   })
 
   server.on('listening', () => {
-    spinner.text = 'Browse to http://localhost:' + port + ' to configure Wiki.js!'
+    spinner.text = 'configuration page running on PORT ' + port
   })
 }

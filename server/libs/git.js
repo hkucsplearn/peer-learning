@@ -254,8 +254,6 @@ module.exports = {
   deleteDocument(entryPath, author) {
     let self = this
     let gitFilePath = entryPath + '.md'
-    console.log(gitFilePath)
-
     return this._git.exec('rm', [gitFilePath]).then((cProc) => {
       let out = cProc.stdout.toString()
       if (_.includes(out, 'fatal')) {

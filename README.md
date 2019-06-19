@@ -38,7 +38,28 @@ A local git Repository is used to to store the articles content and change histo
 
 `sudo yarn stop`
 
-# Remark
+# Set up reverse proxy and certbot for https access
+
+```
+(install and config nginx)
+sudo apt update
+sudo apt install nginx
+sudo cp -f ./nginx.conf /etc/nginx/sites-available/default
+sudo nginx -t
+sudo systemctl enable nginx
+sudo systemctl restart nginx
+
+(install and config certbot)
+sudo add-apt-repository ppa:some/ppa
+sudo apt-get update
+sudo apt-get install python-certbot-nginx
+sudo certbot --nginx -d coder.faith
+(choose "redirect all traffic to https" option in the prompt)
+sudo crontab -e
+(paste "0 12 * * * /usr/bin/certbot renew --quiet" to the editor)
+```
+
+# Development Remarks
 
 ## icon
 `i.nc-icon-outline.business_hierarchy-55`

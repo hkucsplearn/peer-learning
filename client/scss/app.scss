@@ -1,6 +1,6 @@
 @charset "utf-8";
 
-$primary: 'indigo';
+$primary: 'teal';
 
 @import "base/variables";
 @import "base/colors";
@@ -20,6 +20,7 @@ $primary: 'indigo';
 @import 'components/grid';
 @import 'components/hero';
 @import 'components/history';
+@import 'components/list';
 @import 'components/markdown-content';
 @import 'components/modal';
 @import 'components/nav';

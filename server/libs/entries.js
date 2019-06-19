@@ -496,7 +496,7 @@ module.exports = {
   move(entryPath, newEntryPath, author) {
     let self = this
 
-    if (_.isEmpty(entryPath) || entryPath === 'home') {
+    if (_.isEmpty(entryPath) || ['home', 'guide'].includes(entryPath)) {
       return Promise.reject(new Error(lang.t('errors:invalidpath')))
     }
 
@@ -531,7 +531,7 @@ module.exports = {
    * @return {Promise} Promise of the operation
    */
   remove(entryPath, author) {
-    if (_.isEmpty(entryPath) || entryPath === 'home') {
+    if (_.isEmpty(entryPath) || ['home', 'guide'].includes(entryPath)) {
       return Promise.reject(new Error(lang.t('errors:invalidpath')))
     }
 
@@ -586,8 +586,8 @@ module.exports = {
     })
   },
 
-  getAllArticlePath(usr) {
-    return db.Entry.find({}, 'title parentPath isDirectory isEntry').sort({ _id: 'asc' }).then(results => {
+  getAllEntry(usr) {
+    return db.Entry.find({}, 'title parentPath isDirectory isEntry subtitle updatedAt').sort({ _id: 'asc' }).then(results => {
       return _.filter(results, r => {
         return rights.checkRole('/' + r._id, usr.rights, 'read')
       })
