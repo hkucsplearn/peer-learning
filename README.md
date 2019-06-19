@@ -21,6 +21,8 @@ Documentation: https://docs-legacy.requarks.io/
 
 `yarn run dev-configure` (run config to test the settings and create admin user)
 
+`(Stop the process after finished)`
+
 A local git Repository is used to to store the articles content and change history. The configuration will ask you to specify a remote git repository, which the local git repo will sync with, and information to access the remote git repo, but you can skip this part to use local git repository only. Related information: [Connecting to GitHub with SSH](https://help.github.com/en/articles/connecting-to-github-with-ssh)
 
 
@@ -37,6 +39,14 @@ A local git Repository is used to to store the articles content and change histo
 # Stop the server from production mode
 
 `sudo yarn stop`
+
+# Deploy update to server
+
+```
+(ssh to server)
+(copy deployUpdates.sh from repository to working directory if not yet)
+sudo bash ./deployUpdates.sh
+```
 
 # Set up reverse proxy and certbot for https access
 
