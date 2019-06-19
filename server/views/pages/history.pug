@@ -8,7 +8,7 @@ block rootNavRight
   span.nav-item
     a.button(href='/' + pageData.meta._id)
       i.nc-icon-outline.ui-3_select
-      span= t('nav.viewlatest')
+      span= t('nav.normalview')
 
 block content
   history(current-path=pageData.meta._id, history-data=JSON.stringify(pageData.history))

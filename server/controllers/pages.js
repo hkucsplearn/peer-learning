@@ -147,7 +147,7 @@ router.use((req, res, next) => {
       .then(data => {
         const pageData = data.filter(d => {
           const path = d._id.toString()
-          return !(['home', 'guide'].includes(path)) && !path.startsWith('uploads')
+          return !(['home', 'guide'].includes(path))
         })
 
         res.render('pages/all', { pageData })

@@ -41,7 +41,7 @@
   },
   "welcome": {
     "title": "Welcome to your wiki!",
-    "subtitle": "Let's get started and create the home page.",
+    "subtitle": "initializing...",
     "createhome": "Create Home Page"
   },
   "loading": {
