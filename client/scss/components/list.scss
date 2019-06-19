@@ -12,11 +12,11 @@
 		font-size: 13px;
 		color: mc($primary,'500');
 		text-shadow: 1px 1px 0 #FFF;
-		
+
 		span {
 			font-weight: 500;
 		}
-	
+
 		i {
 			margin-right: 10px;
 		}
@@ -54,9 +54,40 @@
 			color: mc('grey','700');
 		}
 		span {
-			color: mc('grey','600');	
+			color: mc('grey','600');
 		}
 
 	}
 
+}
+
+.clickable-list {
+  display: block;
+  height: 80px;
+  width: 100%;
+
+  span {
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 18px;
+    line-height: 80px;
+  }
+
+  &:hover {
+    color: rgb(255, 255, 255) !important;
+    background-color: rgb(66, 126, 103) !important;
+  }
+
+  &:active {
+    color: rgb(0, 0, 0) !important;
+    background-color: rgb(66, 126, 103) !important;
+  }
+}
+
+.separating-line {
+  margin-top: 1px;
+  display: block;
+  height: 2px;
+  width: 100%;
+  border-top: 1px solid rgb(107, 106, 106)!important;
 }

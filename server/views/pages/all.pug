@@ -36,8 +36,11 @@ block content
           .form-sections
             section
               ul
-                each path in pageData
-                  a(href=path) #{path}
-                  hr
+                .separating-line
+                each entry in pageData
+                  .clickable-list
+                    li(onclick=`location.href='${entry._id}';`)
+                      span= `[ /${entry._id} ] ${entry.title}: ${entry.subtitle}`
+                  .separating-line
 
   modal-create-page('home')

@@ -143,10 +143,13 @@ router.put('/create/*', (req, res, next) => {
  */
 router.use((req, res, next) => {
   if (_.endsWith(req.url, '/all')) {
-    entries.getAllArticlePath(req.user)
+    entries.getAllEntry(req.user)
       .then(data => {
-        data = data.map(d => '/' + d._id.toString())
-        const pageData = data.filter(d => d !== '/home' && d !== '/guide')
+        const pageData = data.filter(d => {
+          const path = d._id.toString()
+          return !(['home', 'guide'].includes(path)) && !path.startsWith('uploads')
+        })
+
         res.render('pages/all', { pageData })
         return true
       })
