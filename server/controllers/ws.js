@@ -91,7 +91,7 @@ module.exports = (socket) => {
 
     socket.on('uploadsRenameFile', (data, cb) => {
       cb = cb || _.noop
-      upl.copyUploadsFile(data.uid, data.folder, data.filename).then((f) => {
+      upl.moveUploadsFile(data.uid, data.folder, data.filename).then((f) => {
         return cb({ ok: true }) || true
       }).catch((err) => {
         return cb({

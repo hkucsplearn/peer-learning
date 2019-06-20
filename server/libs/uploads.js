@@ -217,7 +217,7 @@ module.exports = {
   },
 
   /**
-   * Move/Rename a file
+   * Copy a file to another location
    *
    * @param      {String}   uid        The file ID
    * @param      {String}   fld        The destination folder
@@ -287,6 +287,74 @@ module.exports = {
         }
       })
     })
-  }
+  },
 
+  /**
+   * Created on 20/06/2019
+   * Move/Rename a file
+   *
+   * @param      {String}   uid        The file ID
+   * @param      {String}   fld        The destination folder
+   * @param      {String}   nFilename  The new filename (optional)
+   * @return     {Promise}  Promise of the operation
+   */
+  moveUploadsFile (uid, fld, nFilename) {
+    let self = this
+
+    return uplAgent.initialScan(false).then(() => {
+      return db.UplFolder.findById('f:' + fld).then((folder) => {
+        if (folder) {
+          return db.UplFile.findById(uid).then((originFile) => {
+            // -> Check if rename is valid
+
+            let nameCheck = null
+            if (nFilename) {
+              let originFileObj = path.parse(originFile.filename)
+              nameCheck = lcdata.validateUploadsFilename(nFilename + originFileObj.ext, folder.name)
+            } else {
+              nameCheck = Promise.resolve(originFile.filename)
+            }
+
+            return nameCheck.then((destFilename) => {
+              let originFolder = (originFile.folder && originFile.folder !== 'f:') ? originFile.folder.slice(2) : './'
+              let sourceFilePath = path.resolve(self._uploadsPath, originFolder, originFile.filename)
+              let destFilePath = path.resolve(self._uploadsPath, folder.name, destFilename)
+              let preMoveOps = []
+
+              // -> Check for invalid operations
+
+              if (sourceFilePath === destFilePath) {
+                return Promise.reject(new Error(lang.t('errors:invalidoperation')))
+              }
+
+              // -> Delete DB entry
+
+              preMoveOps.push(db.UplFile.findByIdAndRemove(uid))
+
+              // -> Move thumbnail ahead to avoid re-generation
+
+              if (originFile.category === 'image') {
+                let fUid = crypto.createHash('md5').update(folder.name + '/' + destFilename).digest('hex')
+                let sourceThumbPath = path.resolve(self._uploadsThumbsPath, originFile._id + '.png')
+                let destThumbPath = path.resolve(self._uploadsThumbsPath, fUid + '.png')
+                preMoveOps.push(fs.moveAsync(sourceThumbPath, destThumbPath))
+              } else {
+                preMoveOps.push(Promise.resolve(true))
+              }
+
+              // -> Proceed to move actual file
+
+              return Promise.all(preMoveOps).then(() => {
+                return fs.moveAsync(sourceFilePath, destFilePath, {
+                  clobber: false
+                })
+              })
+            })
+          })
+        } else {
+          return Promise.reject(new Error(lang.t('errors:invaliddestfolder')))
+        }
+      })
+    })
+  }
 }
