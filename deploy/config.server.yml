@@ -1,6 +1,6 @@
 title: Peer Learning
-host: 'http://18.162.186.200:80'
-port: 3000
+host: 'https://peerlearning.cs.hku.hk'
+port: 3001
 paths:
   repo: ./repo
   data: ./data
@@ -10,6 +10,33 @@ uploads:
 lang: en
 langRtl: false
 public: true
+sessionSecret: abe523594485d21dc4490404db4a5f26ff60df57a9a3f6a29085e3642b43f4e3
+db: 'mongodb://localhost:27017/peerlearning'
+git:
+  url: 'git@github.com:hkucsplearn/peer-learning-article.git'
+  branch: master
+  auth:
+    type: ssh
+    username: ''
+    password: ''
+    privateKey: /home/ubuntu/.ssh/id_rsa
+    sslVerify: true
+  showUserEmail: true
+  serverEmail: plearn@cs.hku.hk
+externalLogging:
+  bugsnag: false
+  loggly: false
+  papertrail: false
+  rollbar: false
+  sentry: false
+theme:
+  primary: teal
+  alt: blue-grey
+  viewSource: all
+  footer: blue-grey
+  code:
+    dark: true
+    colorize: true
 auth:
   defaultReadAccess: false
   local:
@@ -65,30 +92,3 @@ auth:
     tokenURL: OPENID_CONNECT_TOKEN_URL
     emailClaim: OPENID_CONNECT_EMAIL_CLAIM_PATH
     usernameClaim: OPENID_CONNECT_USERNAME_CLAIM_PATH
-sessionSecret: abe523594485d21dc4490404db4a5f26ff60df57a9a3f6a29085e3642b43f4e3
-db: 'mongodb://localhost:27017/peerlearning'
-git:
-  url: 'git@github.com:hkucsplearn/peer-learning-article.git'
-  branch: master
-  auth:
-    type: ssh
-    username: ''
-    password: ''
-    privateKey: /home/ubuntu/.ssh/id_rsa
-    sslVerify: true
-  showUserEmail: true
-  serverEmail: plearn@cs.hku.hk
-externalLogging:
-  bugsnag: false
-  loggly: false
-  papertrail: false
-  rollbar: false
-  sentry: false
-theme:
-  primary: teal
-  alt: blue-grey
-  viewSource: all
-  footer: blue-grey
-  code:
-    dark: true
-    colorize: true

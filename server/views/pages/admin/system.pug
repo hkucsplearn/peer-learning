@@ -3,7 +3,7 @@ extends ./_layout.pug
 block adminContent
   .hero
     h1.title#title= t('nav.sysinfo')
-    h2.subtitle= t('admin:system.subtitle')
+    h2.subtitle= 'Information and utilities for the web server'
     i.pageicon.nc-icon-outline.objects_planet
   admin-settings(inline-template)
     .form-sections
@@ -11,16 +11,16 @@ block adminContent
         label.label= t('admin:system.systemversion')
         .section-block
           p #{t('admin:system.currentversion')}: #[strong= sysversion.current]
-          if sysversion.latest
-            p #{t('admin:system.latestversion')}: #[strong= sysversion.latest] #[em (Published #{moment(sysversion.latestPublishedAt).fromNow()})]
-            p
-              if sysversion.current !== sysversion.latest
-                button.button.is-deep-orange(@click='$store.dispatch("modalUpgradeSystem/open", { mode: "upgrade"})')= t('admin:system.upgrade')
-              else
-                button.button.is-disabled= t('admin:system.upgrade')
-              button.button.is-deep-orange.is-outlined(@click='$store.dispatch("modalUpgradeSystem/open", { mode: "reinstall"})')= t('admin:system.reinstall')
-          else
-            p: em= t('admin:system.versioncheckfailed')
+          //- if sysversion.latest
+          //-   p #{t('admin:system.latestversion')}: #[strong= sysversion.latest] #[em (Published #{moment(sysversion.latestPublishedAt).fromNow()})]
+          //-   p
+          //-     if sysversion.current !== sysversion.latest
+          //-       button.button.is-deep-orange(@click='$store.dispatch("modalUpgradeSystem/open", { mode: "upgrade"})')= t('admin:system.upgrade')
+          //-     else
+          //-       button.button.is-disabled= t('admin:system.upgrade')
+          //-     button.button.is-deep-orange.is-outlined(@click='$store.dispatch("modalUpgradeSystem/open", { mode: "reinstall"})')= t('admin:system.reinstall')
+          //- else
+          //-   p: em= t('admin:system.versioncheckfailed')
       section
         label.label= t('admin:system.hostinfo')
         .section-block
