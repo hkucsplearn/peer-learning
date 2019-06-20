@@ -92,14 +92,15 @@
 
 	}
 
-
-
 }
 
 .editor-modal-image-choices {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: flex-start;
+  align-items: flex-start;
+  margin-top: 15px;
+  margin-left: 10px;
+  border: 5px solid rgb(201, 198, 198);
 
 	overflow: auto;
 	overflow-x: hidden;
@@ -191,8 +192,11 @@
 }
 
 .editor-modal-file-choices {
+  margin-top: 15px;
+  margin-left: 10px;
 	overflow: auto;
-	overflow-x: hidden;
+  overflow-x: hidden;
+  border: 5px solid rgb(201, 198, 198);
 
 	> em {
 		display: flex;

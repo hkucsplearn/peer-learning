@@ -6,43 +6,54 @@
       .modal-container
         transition(name='modal-content')
           .modal-content.is-expanded(v-show='isShown')
-            .modal-toolbar.is-green
-              a.button#btn-editor-file-upload
-                i.nc-icon-outline.arrows-1_cloud-upload-94
-                span {{ (mode === 'file') ? $t('editor.fileupload') : $t('editor.imageupload') }}
-                label
-                  input(id='fileInput', type='file', :disabled='isLoading', ref='editorFileUploadInput')
-              a.button(v-if='mode === "image"', @click='fetchFromUrl')
-                i.nc-icon-outline.arrows-1_cloud-download-93
-                span Fetch from URL
+            .modal-toolbar.is-green(id='toolbar')
+              span(id='title') {{ (mode === 'file') ? $t('File Uploader (Image Excluded)') : $t('Image Uploader') }}
+
             section.is-gapless
-              .columns.is-stretched
-                .column.is-one-quarter.modal-sidebar.is-green(style={'max-width':'350px'})
-                  .model-sidebar-header(v-if='mode === "image"') Alignment
-                  .model-sidebar-content(v-if='mode === "image"')
-                    p.control.is-fullwidth
-                      select(v-model='currentAlign')
-                        option(value='left') {{ $t('editor.imagealignleft') }}
-                        option(value='center') {{ $t('editor.imagealigncenter') }}
-                        option(value='right') {{ $t('editor.imagealignright') }}
-                        option(value='logo') {{ $t('editor.imagealignlogo') }}
-                .column.editor-modal-choices.editor-modal-file-choices(v-if='mode === "file"')
-                  figure(v-for='fl in files', :class='{ "is-active": currentFile === fl._id }', @click='selectFile(fl._id)', :data-uid='fl._id')
-                    i(class='icon-file')
-                    span: strong {{ fl.filename }}
-                    span {{ fl.mime }}
-                    span {{ filesize(fl.filesize) }}
-                  em(v-show='files.length < 1')
-                    i.icon-marquee-minus
-                    | {{ $t('editor.filefolderempty') }}
-                .column.editor-modal-choices.editor-modal-image-choices(v-if='mode === "image"')
-                  figure(v-for='img in files', v-bind:class='{ "is-active": currentFile === img._id }', v-on:click='selectFile(img._id)', v-bind:data-uid='img._id')
-                    img(v-bind:src='"/uploads/t/" + img._id + ".png"')
-                    span: strong {{ img.basename }}
-                    span {{ filesize(img.filesize) }}
-                  em(v-show='files.length < 1')
-                    i.icon-marquee-minus
-                    | {{ $t('editor.filefolderempty') }}
+              .top-buttons
+                a.button(id='fetch-url-button', v-if='mode === "image"', @click='fetchFromUrl')
+                  i.nc-icon-outline.arrows-1_cloud-download-93
+                  span Fetch from URL
+                a.button#btn-editor-file-upload
+                  i.nc-icon-outline.arrows-1_cloud-upload-94
+                  span {{ (mode === 'file') ? $t('editor.fileupload') : $t('editor.imageupload') }}
+                  label
+                    input(id='fileInput', type='file', :disabled='isLoading', ref='editorFileUploadInput')
+              span(id='instruction-title1') Instructions
+              span(id='instruction') {{ (mode === 'file') ? $t('The list below is files uploaded to this document (Except images).') : $t('The list below is images uploaded to this document.') }}
+              span(id='instruction') {{ (mode === 'file') ? $t('To upload a file not in the list below, click "UPLOAD FILE()".') : $t('To upload an image not in the list below, click "UPLOAD IMAGE(S)", "FETCH FROM URL"') }}
+              span(id='instruction') {{ (mode === 'file') ? $t('To insert an uploaded file in the document, select the desired file below and click "INSERT LINK TO FILE".') : $t('To insert an uploaded image in the document, select the desired image below and click "INSERT IMAGE"') }}
+
+              span(id='instruction-title2') {{ (mode === 'file') ? $t('Files Uploaded to This Document') : $t('Photos Uploaded to This Document') }}
+
+              .column.editor-modal-choices.editor-modal-file-choices(v-if='mode === "file"')
+                figure(v-for='fl in files', :class='{ "is-active": currentFile === fl._id }', @click='selectFile(fl._id)', :data-uid='fl._id')
+                  i(class='icon-file')
+                  span: strong {{ fl.filename }}
+                  span {{ fl.mime }}
+                  span {{ filesize(fl.filesize) }}
+                em(v-show='files.length < 1')
+                  i.icon-marquee-minus
+                  | {{ $t('editor.filefolderempty') }}
+
+              .modal-sidebar(v-if='mode === "image"')
+                span(id='instruction-option') Option: Position photo in document at direction
+                p.control.is-fullwidth
+                  select(v-model='currentAlign')
+                    option(value='left') {{ $t('editor.imagealignleft') }}
+                    option(value='center') {{ $t('editor.imagealigncenter') }}
+                    option(value='right') {{ $t('editor.imagealignright') }}
+                    option(value='logo') {{ $t('editor.imagealignlogo') }}
+
+              .column.editor-modal-choices.editor-modal-image-choices(v-if='mode === "image"')
+                figure(v-for='img in files', v-bind:class='{ "is-active": currentFile === img._id }', v-on:click='selectFile(img._id)', v-bind:data-uid='img._id')
+                  img(v-bind:src='"/uploads/t/" + img._id + ".png"')
+                  span: strong {{ img.basename }}
+                  span {{ filesize(img.filesize) }}
+                em(v-show='files.length < 1')
+                  i.icon-marquee-minus
+                  | {{ $t('editor.filefolderempty') }}
+
             footer
               a.button.is-grey.is-outlined(@click='cancel') {{ $t('editor.discard') }}
               a.button.is-green(@click='insertFileLink') {{ (mode === 'file') ? $t('editor.fileinsert') : $t('editor.imageinsert') }}
