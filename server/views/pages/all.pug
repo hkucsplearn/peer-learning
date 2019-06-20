@@ -40,7 +40,9 @@ block content
                 each entry in pageData
                   .clickable-list
                     li(onclick=`location.href='${entry._id}';`)
-                      span= `[ /${entry._id} ] ${entry.title}: ${entry.subtitle}`
+                      span= `[ /${entry._id} ]`
+                      br
+                      span= `${entry.title}: ${entry.subtitle}`
                   .separating-line
 
   modal-create-page('home')

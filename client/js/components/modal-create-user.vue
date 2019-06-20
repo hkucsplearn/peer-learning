@@ -18,11 +18,11 @@
               p.control.is-fullwidth
                 select(v-model='provider')
                   option(value='local') Local Database
-                  option(value='windowslive') Microsoft Account
-                  option(value='google') Google ID
-                  option(value='facebook') Facebook
-                  option(value='github') GitHub
-                  option(value='slack') Slack
+                  //- option(value='windowslive') Microsoft Account
+                  //- option(value='google') Google ID
+                  //- option(value='facebook') Facebook
+                  //- option(value='github') GitHub
+                  //- option(value='slack') Slack
             section(v-if='provider=="local"')
               label.label {{ $t('modal.createuserpassword') }}
               p.control.is-fullwidth

@@ -252,9 +252,9 @@ router.get('/system', (req, res) => {
   fs.readJsonAsync(path.join(ROOTPATH, 'package.json')).then(packageObj => {
     axios.get('https://api.github.com/repos/Requarks/wiki/releases/latest').then(resp => {
       let sysversion = {
-        current: 'v' + packageObj.version,
-        latest: resp.data.tag_name,
-        latestPublishedAt: resp.data.published_at
+        current: 'v' + packageObj.version
+        // latest: resp.data.tag_name,
+        // latestPublishedAt: resp.data.published_at
       }
 
       res.render('pages/admin/system', { adminTab: 'system', hostInfo, sysversion })

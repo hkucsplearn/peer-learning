@@ -1,8 +1,8 @@
 {
-  "name": "wiki",
+  "name": "peer-learning",
   "version": "1.0.0",
-  "description": "A modern, lightweight and powerful wiki app built on NodeJS, Git and Markdown",
-  "main": "wiki.js",
+  "description": "A wiki-like peer-learning website for HKUCS students",
+  "main": "Peer Learning",
   "scripts": {
     "start": "node wiki start",
     "stop": "node wiki stop",
@@ -10,30 +10,27 @@
     "build": "node tools/fuse",
     "dev": "node tools/fuse -d",
     "dev-configure": "node tools/fuse -c",
-    "test": "jest",
-    "postinstall": "opencollective postinstall"
+    "test": "jest"
   },
   "bin": {
     "wiki": "wiki.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Requarks/wiki.git"
+    "url": "git+https://github.com/hkucsplearn/peer-learning.git"
   },
   "keywords": [
+    "peer learning",
+    "plearn",
     "wiki",
-    "wikis",
     "docs",
     "documentation",
     "markdown",
     "guides"
   ],
-  "author": "Nicolas Giard",
+  "contributors": ["Nicolas Giard", "Jeff Siu", "Eric Lau"],
   "license": "AGPL-3.0",
-  "bugs": {
-    "url": "https://github.com/Requarks/wiki/issues"
-  },
-  "homepage": "https://github.com/Requarks/wiki#readme",
+  "homepage": "https://github.com/hkucsplearn/peer-learning",
   "engines": {
     "node": ">=6.11.1"
   },
@@ -184,10 +181,5 @@
     "output": "./test-results/junit.xml",
     "classNameTemplate": "{classname}-{title}",
     "titleTemplate": "{classname}-{title}"
-  },
-  "collective": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/wikijs",
-    "logo": "https://opencollective.com/opencollective/logo.txt"
   }
 }
