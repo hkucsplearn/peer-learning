@@ -324,25 +324,25 @@
       // MOVE FILE
       // -------------------------------------------
 
-      moveFile(uid, fld) {
+      copyFile(uid, fld) {
         let self = this
-        this.isLoadingText = this.$t('editor.filemoveloading')
+        this.isLoadingText = this.$t('editor.filecopyloading')
         this.isLoading = true
         this.$nextTick(() => {
-          socket.emit('uploadsMoveFile', { uid, folder: fld }, (data) => {
+          socket.emit('uploadsCopyFile', { uid, folder: fld }, (data) => {
             if (data.ok) {
               self.loadFiles()
               self.$store.dispatch('alert', {
                 style: 'blue',
                 icon: 'files_check',
-                msg: self.$t('editor.filemovesuccess')
+                msg: self.$t('editor.filecopysuccess')
               })
             } else {
               self.isLoading = false
               self.$store.dispatch('alert', {
                 style: 'red',
                 icon: 'ui-2_square-remove-09',
-                msg: self.$t('editor.filemoveerror', { err: data.msg })
+                msg: self.$t('editor.filecopyerror', { err: data.msg })
               })
             }
           })
@@ -457,6 +457,7 @@
 
       attachContextMenus() {
         let self = this
+
         let moveFolders = this._.map(this.folders, (f) => {
           return {
             name: (f !== '') ? f : '/ (root)',
@@ -464,7 +465,7 @@
             callback: (key, opt) => {
               let moveFileId = self._.toString($(opt.$trigger).data('uid'))
               let moveFileDestFolder = self._.nth(self.folders, key)
-              self.moveFile(moveFileId, moveFileDestFolder)
+              self.copyFile(moveFileId, moveFileDestFolder)
             }
           }
         })
@@ -494,7 +495,7 @@
               }
             },
             move: {
-              name: self.$t('editor.filemoveaction'),
+              name: self.$t('editor.filecopyaction'),
               icon: 'fa-folder-open-o',
               items: moveFolders
             },
@@ -523,9 +524,9 @@
           },
           limit: 20,
           expect: 'json',
-          allowedExts: (self.mode === 'image') ? ['jpg', 'jpeg', 'gif', 'png', 'webp'] : undefined,
-          allowedTypes: (self.mode === 'image') ? ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/webp'] : undefined,
-          maxFileSize: (self.mode === 'image') ? 3145728 : 0, // max 3 MB
+          allowedExts: (self.mode === 'image') ? ['jpg', 'jpeg', 'gif', 'png', 'webp'] : !['jpg', 'jpeg', 'gif', 'png', 'webp'],
+          allowedTypes: (self.mode === 'image') ? ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/webp'] : !['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/webp'],
+          maxFileSize: (self.mode === 'image') ? 3145728 : 3145728, // max 3 MB
 
           init: (totalUploads) => {
             self.uploadSucceeded = false

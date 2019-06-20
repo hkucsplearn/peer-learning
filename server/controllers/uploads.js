@@ -113,6 +113,18 @@ router.post('/file', lcdata.uploadFileHandler, (req, res, next) => {
         destFilename = fname
         destFilePath = path.resolve(destFolderPath, destFilename)
 
+        return readChunk(f.path, 0, 262)
+      }).then((buf) => {
+        // -> Check MIME type by magic number
+
+        let mimeInfo = fileType(buf)
+        if (mimeInfo !== null) {
+          if (_.includes(['image/png', 'image/jpeg', 'image/gif', 'image/webp'], mimeInfo.mime)) {
+            return Promise.reject(new Error(lang.t('errors:invalidfiletype')))
+          }
+        }
+        return true
+      }).then(() => {
         // -> Move file to final destination
 
         return fs.moveAsync(f.path, destFilePath, { clobber: false })

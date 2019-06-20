@@ -4,7 +4,6 @@
 /* eslint-disable standard/no-callback-literal */
 
 const _ = require('lodash')
-const uplAgent = require('../libs/uploads-agent').init()
 
 module.exports = (socket) => {
   // Check if Guest
@@ -102,9 +101,9 @@ module.exports = (socket) => {
       })
     })
 
-    socket.on('uploadsMoveFile', (data, cb) => {
+    socket.on('uploadsCopyFile', (data, cb) => {
       cb = cb || _.noop
-      upl.moveUploadsFile(data.uid, data.folder).then((f) => {
+      upl.copyUploadsFile(data.uid, data.folder).then((f) => {
         return cb({ ok: true }) || true
       }).catch((err) => {
         return cb({

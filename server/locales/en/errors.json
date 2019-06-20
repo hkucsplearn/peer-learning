@@ -9,7 +9,7 @@
   "invaliddestfolder": "Invalid Destination Folder!",
   "invalidfiletype": "Invalid File Type.",
   "invalidfolder": "Invalid Folder.",
-  "invalidoperation": "Invalid Operation!",
+  "invalidoperation": "You cannot copy the file to the original folder!",
   "invalidpath": "Invalid page path.",
   "invaliduserid": "Invalid User Id",
   "newpasswordtooshort": "New password is too short!",

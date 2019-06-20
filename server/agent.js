@@ -198,7 +198,7 @@ global.db.onReady.then(() => {
 
         if (!jobUplWatchStarted) {
           jobUplWatchStarted = true
-          global.upl.initialScan().then(() => {
+          global.upl.initialScan(true).then(() => {
             job.start()
           })
         }
