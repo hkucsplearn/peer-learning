@@ -30,6 +30,27 @@
               br
               span.email #{user.email}
           .nav-item
-            a.button.nav-bar(href='/admin')
-              i.nc-icon-outline.ui-1_settings-gear-63
-              span= t('nav.settings')
+            .dropdown
+              a.button.nav-bar
+                i.nc-icon-outline.ui-1_settings-gear-63
+                span= 'Setting'
+              .dropdown-content
+                a.button.nav-bar(href='/admin/profile')
+                  i.nc-icon-outline.business_business-contact-86
+                  span= 'Profile'
+                a.button.nav-bar(href='/admin/stats')
+                  i.nc-icon-outline.ui-3_chart-bars
+                  span= t('nav.stats')
+                if rights.manage
+                  a.button.nav-bar(href='/admin/users')
+                    i.nc-icon-outline.users_multiple-19
+                    span= t('nav.users')
+                  a.button.nav-bar(href='/admin/theme')
+                    i.nc-icon-outline.ui-1_drop
+                    span= 'Theme'
+                  a.button.nav-bar(href='/admin/system')
+                    i.nc-icon-outline.travel_info
+                    span= 'Sys. Info'
+                a.button.nav-bar(href='/logout')
+                  i.nc-icon-outline.arrows-1_log-out
+                  span= 'Logout'

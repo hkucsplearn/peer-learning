@@ -259,3 +259,36 @@
   }
 
 }
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  min-width: 105px;
+
+  &:hover .dropdown-content {
+    display: block;
+  }
+
+  a {
+    height: 52px !important;
+    display: flex !important;
+    justify-content: right !important;
+  }
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  min-width: 105px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+
+  a {
+    display: flex !important;
+    justify-content: right !important;
+    text-transform: none !important;
+    height: 52px !important;
+  }
+
+}
