@@ -24,7 +24,7 @@
               span(id='instruction') {{ (mode === 'file') ? $t('To upload a file not in the list below, click "UPLOAD FILE()".') : $t('To upload an image not in the list below, click "UPLOAD IMAGE(S)", "FETCH FROM URL"') }}
               span(id='instruction') {{ (mode === 'file') ? $t('To insert an uploaded file in the document, select the desired file below and click "INSERT LINK TO FILE".') : $t('To insert an uploaded image in the document, select the desired image below and click "INSERT IMAGE"') }}
 
-              span(id='instruction-title2') {{ (mode === 'file') ? $t('Files Uploaded to This Document') : $t('Photos Uploaded to This Document') }}
+              span(id='instruction-title2') {{ (mode === 'file') ? $t('Files Uploaded to This Document') : $t('Images Uploaded to This Document') }}
 
               .column.editor-modal-choices.editor-modal-file-choices(v-if='mode === "file"')
                 figure(v-for='fl in files', :class='{ "is-active": currentFile === fl._id }', @click='selectFile(fl._id)', :data-uid='fl._id')
