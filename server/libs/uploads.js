@@ -10,6 +10,7 @@ const url = require('url')
 const crypto = require('crypto')
 const _ = require('lodash')
 var uplAgent = require('../libs/uploads-agent')
+const util = require('util')
 
 var regFolderName = new RegExp('^[a-z0-9][a-z0-9-]*[a-z0-9]$')
 const maxDownloadFileSize = 3145728 // 3 MB
@@ -49,7 +50,7 @@ module.exports = {
    * @return     {Array<String>}  The uploads folders.
    */
   getUploadsFolders () {
-    return db.UplFolder.find({}, 'name').sort('name').exec().then((results) => {
+    return db.UplFolder.find({ name: { $ne: '' } }, 'name').sort('name').exec().then((results) => {
       return (results) ? _.map(results, 'name') : [{ name: '' }]
     })
   },
@@ -114,7 +115,7 @@ module.exports = {
    * @return     {Array<Object>}  The files matching the query
    */
   getUploadsFiles (cat, fld) {
-    return uplAgent.initialScan().then(() => {
+    return uplAgent.initialScan(false).then(() => {
       return db.UplFile.find({
         category: cat,
         folder: 'f:' + fld
@@ -223,61 +224,68 @@ module.exports = {
    * @param      {String}   nFilename  The new filename (optional)
    * @return     {Promise}  Promise of the operation
    */
-  moveUploadsFile (uid, fld, nFilename) {
+  copyUploadsFile (uid, fld, nFilename) {
     let self = this
 
-    return db.UplFolder.findById('f:' + fld).then((folder) => {
-      if (folder) {
-        return db.UplFile.findById(uid).then((originFile) => {
-          // -> Check if rename is valid
+    return uplAgent.initialScan(false).then(() => {
+      return db.UplFolder.findById('f:' + fld).then((folder) => {
+        if (folder) {
+          return db.UplFile.findById(uid).then((originFile) => {
+            // -> Check if rename is valid
 
-          let nameCheck = null
-          if (nFilename) {
-            let originFileObj = path.parse(originFile.filename)
-            nameCheck = lcdata.validateUploadsFilename(nFilename + originFileObj.ext, folder.name)
-          } else {
-            nameCheck = Promise.resolve(originFile.filename)
-          }
-
-          return nameCheck.then((destFilename) => {
-            let originFolder = (originFile.folder && originFile.folder !== 'f:') ? originFile.folder.slice(2) : './'
-            let sourceFilePath = path.resolve(self._uploadsPath, originFolder, originFile.filename)
-            let destFilePath = path.resolve(self._uploadsPath, folder.name, destFilename)
-            let preMoveOps = []
-
-            // -> Check for invalid operations
-
-            if (sourceFilePath === destFilePath) {
-              return Promise.reject(new Error(lang.t('errors:invalidoperation')))
-            }
-
-            // -> Delete DB entry
-
-            preMoveOps.push(db.UplFile.findByIdAndRemove(uid))
-
-            // -> Move thumbnail ahead to avoid re-generation
-
-            if (originFile.category === 'image') {
-              let fUid = crypto.createHash('md5').update(folder.name + '/' + destFilename).digest('hex')
-              let sourceThumbPath = path.resolve(self._uploadsThumbsPath, originFile._id + '.png')
-              let destThumbPath = path.resolve(self._uploadsThumbsPath, fUid + '.png')
-              preMoveOps.push(fs.moveAsync(sourceThumbPath, destThumbPath))
+            let nameCheck = null
+            if (nFilename) {
+              let originFileObj = path.parse(originFile.filename)
+              nameCheck = lcdata.validateUploadsFilename(nFilename + originFileObj.ext, folder.name)
             } else {
-              preMoveOps.push(Promise.resolve(true))
+              nameCheck = Promise.resolve(originFile.filename)
             }
 
-            // -> Proceed to move actual file
+            return nameCheck.then((destFilename) => {
+              let originFolder = (originFile.folder && originFile.folder !== 'f:') ? originFile.folder.slice(2) : './'
+              let sourceFilePath = path.resolve(self._uploadsPath, originFolder, originFile.filename)
+              let destFilePath = path.resolve(self._uploadsPath, folder.name, destFilename)
 
-            return Promise.all(preMoveOps).then(() => {
-              return fs.moveAsync(sourceFilePath, destFilePath, {
-                clobber: false
-              })
+              // -> Check for invalid operations
+
+              if (sourceFilePath === destFilePath) {
+                return Promise.reject(new Error(lang.t('errors:invalidoperation')))
+              }
+
+              // -> Move thumbnail ahead to avoid re-generation
+
+              if (originFile.category === 'image') {
+                let fUid = crypto.createHash('md5').update(folder.name + '/' + destFilename).digest('hex')
+                var sourceThumbPath = path.resolve(self._uploadsThumbsPath, originFile._id + '.png')
+                var destThumbPath = path.resolve(self._uploadsThumbsPath, fUid + '.png')
+                const copyFile = util.promisify(fs.copyFile)
+
+                if (!fs.existsSync(destFilePath)) {
+                  copyFile(sourceThumbPath, destThumbPath).then(() => {
+                    copyFile(sourceFilePath, destFilePath)
+                  }).then(() => {
+                    return true
+                  })
+                } else {
+                  throw new Error(lang.t('errors:fileexists', { path: destFilePath }))
+                }
+              } else {
+                const copyFile = util.promisify(fs.copyFile)
+
+                if (!fs.existsSync(destFilePath)) {
+                  copyFile(sourceFilePath, destFilePath).then(() => {
+                    return true
+                  })
+                } else {
+                  throw new Error(lang.t('errors:fileexists', { path: destFilePath }))
+                }
+              }
             })
           })
-        })
-      } else {
-        return Promise.reject(new Error(lang.t('errors:invaliddestfolder')))
-      }
+        } else {
+          return Promise.reject(new Error(lang.t('errors:invaliddestfolder')))
+        }
+      })
     })
   }
 

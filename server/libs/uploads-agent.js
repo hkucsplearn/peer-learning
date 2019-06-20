@@ -1,6 +1,6 @@
 'use strict'
 
-/* global db, git, lang, upl */
+/* global db, git, lang */
 
 const path = require('path')
 const Promise = require('bluebird')
@@ -85,7 +85,7 @@ module.exports = {
    *
    * @return     {Promise<Void>}  Promise of the scan operation
    */
-  initialScan () {
+  initialScan (needWatch) {
     let self = this
 
     return fs.readdirAsync(self._uploadsPath).then((ls) => {
@@ -151,9 +151,13 @@ module.exports = {
         })
       })
     }).then(() => {
-      // Watch for new changes
+      if (needWatch) {
+        // Watch for new changes
 
-      return self.watch('')
+        return self.watch('')
+      } else {
+        return true
+      }
     })
   },
 
