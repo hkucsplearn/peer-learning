@@ -40,7 +40,7 @@ block content
                 each entry in pageData
                   .clickable-list
                     li(onclick=`location.href='${entry._id}';`)
-                      span= `[ /${entry._id} ]`
+                      span.path= `/${entry._id}`
                       br
                       span= `${entry.title}: ${entry.subtitle}`
                   .separating-line

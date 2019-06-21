@@ -219,7 +219,7 @@ module.exports = {
           }
         }).on('data', item => {
           let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
-          if (!(['/home', '/guide', ''].includes(correctedPath))) {
+          if (!(['/home', '/guide', ''].includes(correctedPath)) && !correctedPath.startsWith('/uploads')) {
             items.push(correctedPath)
           }
         }).on('end', () => {
@@ -237,7 +237,7 @@ module.exports = {
           }
         }).on('data', item => {
           let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
-          if (correctedPath !== '') {
+          if (!(['/home', '/guide', ''].includes(correctedPath)) && !correctedPath.startsWith('/uploads')) {
             items.push(correctedPath)
           }
         }).on('end', () => {
