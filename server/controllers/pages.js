@@ -1,6 +1,6 @@
 'use strict'
 
-/* global entries, git, lang, winston */
+/* global entries, git, lang, winston, upl */
 
 const express = require('express')
 const router = express.Router()
@@ -48,6 +48,7 @@ router.put('/edit/*', (req, res, next) => {
   if (!res.locals.rights.write) {
     return res.json({
       ok: false,
+      msg: lang.t('errors:forbidden'),
       error: lang.t('errors:forbidden')
     })
   }
@@ -61,6 +62,7 @@ router.put('/edit/*', (req, res, next) => {
   }).catch((err) => {
     res.json({
       ok: false,
+      msg: err.message,
       error: err.message
     })
   })
@@ -70,45 +72,83 @@ router.put('/edit/*', (req, res, next) => {
 // CREATE MODE
 // ==========================================
 
-router.get('/create/*', (req, res, next) => {
+router.get('/createcheck/*', (req, res, next) => {
   if (!res.locals.rights.write) {
-    return res.render('error-forbidden')
-  }
-
-  if (_.some(['create', 'edit', 'account', 'source', 'history', 'mk', 'all'], (e) => { return _.startsWith(req.path, '/create/' + e) })) {
-    return res.render('error', {
-      message: lang.t('errors:reservedname'),
-      error: {}
+    return res.json({
+      ok: false,
+      msg: lang.t('error-forbidden')
     })
   }
 
-  let safePath = entryHelper.parsePath(_.replace(req.path, '/create', ''))
+  if (_.some(['create', 'home', 'edit', 'account', 'source', 'history', 'mk', 'all'], (e) => { return _.startsWith(req.path, '/createcheck/' + e) })) {
+    return res.json({
+      ok: false,
+      msg: lang.t('errors:reservedname')
+    })
+  }
+
+  let safePath = entryHelper.parsePath(_.replace(req.path, '/createcheck', ''))
 
   entries.exists(safePath).then((docExists) => {
     if (!docExists) {
-      return entries.getStarter(safePath).then((contents) => {
-        let pageData = {
-          markdown: contents,
-          meta: {
-            title: _.startCase(safePath),
-            path: safePath
-          }
-        }
-        res.render('pages/create', { pageData })
+      let safePath = entryHelper.parsePath(_.replace(req.path, '/createcheck', ''))
+      let parentPath = safePath.substr(0, safePath.lastIndexOf('/'))
+      if (safePath.lastIndexOf('/') === -1) {
+        parentPath = safePath
+      }
 
-        return true
-      }).catch((err) => {
-        winston.warn(err)
-        throw new Error(lang.t('errors:starterfailed'))
+      return entries.parentEntryExists(parentPath).then((results) => {
+        if (results.length === 1 || safePath === parentPath) {
+          return entries.getStarter(safePath).then((contents) => {
+            return res.json({
+              ok: true,
+              msg: ''
+            })
+          }).catch((err) => {
+            winston.warn(err)
+            return res.json({
+              ok: false,
+              msg: lang.t('errors:starterfailed')
+            })
+          })
+        } else {
+          return res.json({
+            ok: false,
+            msg: lang.t('errors:forbiddencreate')
+          })
+        }
       })
     } else {
-      throw new Error(lang.t('errors:alreadyexists'))
+      return res.json({
+        ok: false,
+        msg: lang.t('errors:alreadyexists')
+      })
     }
   }).catch((err) => {
-    res.render('error', {
-      message: err.message,
-      error: {}
+    return res.json({
+      ok: false,
+      msg: err
     })
+  })
+})
+
+router.get('/create/*', (req, res, next) => {
+  let safePath = entryHelper.parsePath(_.replace(req.path, '/create', ''))
+
+  return entries.getStarter(safePath).then((contents) => {
+    let pageData = {
+      markdown: contents,
+      meta: {
+        title: _.startCase(safePath),
+        path: safePath
+      }
+    }
+
+    res.render('pages/create', { pageData })
+    return true
+  }).catch((err) => {
+    winston.warn(err)
+    return Promise.reject(new Error(lang.t('errors:starterfailed')))
   })
 })
 
@@ -116,21 +156,36 @@ router.put('/create/*', (req, res, next) => {
   if (!res.locals.rights.write) {
     return res.json({
       ok: false,
+      msg: lang.t('errors:forbidden'),
       error: lang.t('errors:forbidden')
     })
   }
 
   let safePath = entryHelper.parsePath(_.replace(req.path, '/create', ''))
+  let parentPath = safePath.substr(0, safePath.lastIndexOf('/'))
+  if (safePath.lastIndexOf('/') === -1) {
+    parentPath = safePath
+  }
 
-  entries.create(safePath, req.body.markdown, req.user).then(() => {
-    return res.json({
-      ok: true
-    }) || true
-  }).catch((err) => {
-    return res.json({
-      ok: false,
-      error: err.message
-    })
+  return entries.parentEntryExists(parentPath).then((results) => {
+    if (results.length === 1 || safePath === parentPath) {
+      entries.create(safePath, req.body.markdown, req.user).then(() => {
+        return res.json({
+          ok: true
+        }) || true
+      }).catch((err) => {
+        return res.json({
+          ok: false,
+          msg: err.message,
+          error: err.message
+        })
+      })
+    } else {
+      return res.json({
+        ok: false,
+        msg: lang.t('errors:forbiddencreate')
+      })
+    }
   })
 })
 
@@ -287,6 +342,7 @@ router.put('/*', (req, res, next) => {
   if (!res.locals.rights.write) {
     return res.json({
       ok: false,
+      msg: lang.t('errors:forbidden'),
       error: lang.t('errors:forbidden')
     })
   }
@@ -296,6 +352,7 @@ router.put('/*', (req, res, next) => {
   if (_.isEmpty(req.body.move)) {
     return res.json({
       ok: false,
+      msg: lang.t('errors:invalidaction'),
       error: lang.t('errors:invalidaction')
     })
   }
@@ -309,6 +366,7 @@ router.put('/*', (req, res, next) => {
   }).catch((err) => {
     res.json({
       ok: false,
+      msg: err.message,
       error: err.message
     })
   })
@@ -321,21 +379,31 @@ router.delete('/*', (req, res, next) => {
   if (!res.locals.rights.write) {
     return res.json({
       ok: false,
-      error: lang.t('errors:forbidden')
+      msg: lang.t('errors:forbidden')
     })
   }
 
   let safePath = entryHelper.parsePath(req.path)
 
-  entries.remove(safePath, req.user).then(() => {
-    res.json({
-      ok: true
-    })
-  }).catch((err) => {
-    res.json({
-      ok: false,
-      error: err.message
-    })
+  return entries.getChildrenEntry(safePath).then((results) => {
+    if (results.length > 1) {
+      return res.json({
+        ok: false,
+        msg: lang.t('errors:forbiddendelete')
+      })
+    } else {
+      entries.remove(safePath, req.user).then(() => {
+        res.json({
+          ok: true
+        })
+      }).catch((err) => {
+        res.json({
+          ok: false,
+          err: err.message,
+          msg: err.message
+        })
+      })
+    }
   })
 })
 

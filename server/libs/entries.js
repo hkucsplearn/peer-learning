@@ -7,6 +7,7 @@ const path = require('path')
 const fs = Promise.promisifyAll(require('fs-extra'))
 const klaw = require('klaw')
 const _ = require('lodash')
+var uplAgent = require('../libs/uploads-agent')
 
 const entryHelper = require('../helpers/entry')
 
@@ -219,7 +220,7 @@ module.exports = {
           }
         }).on('data', item => {
           let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
-          if (!(['/home', '/guide', ''].includes(correctedPath)) && !correctedPath.startsWith('/uploads')) {
+          if (!(['/home', '/guide', ''].includes(correctedPath))) {
             items.push(correctedPath)
           }
         }).on('end', () => {
@@ -237,7 +238,7 @@ module.exports = {
           }
         }).on('data', item => {
           let correctedPath = entryHelper.getEntryPathFromFullPath(item.path)
-          if (!(['/home', '/guide', ''].includes(correctedPath)) && !correctedPath.startsWith('/uploads')) {
+          if (correctedPath !== '') {
             items.push(correctedPath)
           }
         }).on('end', () => {
@@ -547,12 +548,22 @@ module.exports = {
       search.delete(entryPath)
 
       // Delete entry
-      return db.Entry.deleteOne({ _id: entryPath }).then(() => {
-        return db.UplFolder.deleteOne({ _id: 'f:' + entryPath }).then(() => {
-          return git.deleteFolder(upathShort, author).then(() => {
-            fs.unlinkAsync(upathShort).catch((err) => { return true }) // eslint-disable-line handle-callback-err
+      return this.entryHasFolder(entryPath).then((result) => {
+        if (result[0] === true) {
+          return db.Entry.deleteOne({ _id: entryPath }).then(() => {
+            return git.deleteFolder(entryPath, author).then(() => {
+              return git.deleteFolder(upathShort, author).then(() => {
+                return uplAgent.initialScan(false)
+              })
+            })
           })
-        })
+        } else {
+          return db.Entry.deleteOne({ _id: entryPath }).then(() => {
+            return git.deleteFolder(upathShort, author).then(() => {
+              return uplAgent.initialScan(false)
+            })
+          })
+        }
       })
     })
   },
@@ -568,6 +579,42 @@ module.exports = {
 
     return fs.readFileAsync(path.join(SERVERPATH, 'app/content/create.md'), 'utf8').then((contents) => {
       return _.replace(contents, new RegExp('{TITLE}', 'g'), formattedTitle)
+    })
+  },
+
+  /**
+   * Created on 21/06/2019
+   * Find if entry is a folder also
+   *
+   * @return     {Array<String>}  The entry folder.
+   */
+  entryHasFolder (entryPath) {
+    return db.Entry.find({ _id: {$eq: entryPath} }, '_id').exec().then((result) => {
+      return (result) ? _.map(result, 'isDirectory') : [{ name: '' }]
+    })
+  },
+
+  /**
+   * Created on 21/06/2019
+   * Find if there is specific entry
+   *
+   * @return     {Array<String>}  Existence of the entry
+   */
+  parentEntryExists (entryPath) {
+    return db.Entry.find({ _id: {$eq: entryPath} }, '_id').exec().then((results) => {
+      return (results) ? _.map(results, 'name') : [{ name: '' }]
+    })
+  },
+
+  /**
+   * Created on 21/06/2019
+   * Find all children entries.
+   *
+   * @return     {Array<String>}  The children entries.
+   */
+  getChildrenEntry (parentEntryPath) {
+    return db.Entry.find({ _id: new RegExp(parentEntryPath + '*') }, '_id').exec().then((results) => {
+      return (results) ? _.map(results, 'name') : [{ name: '' }]
     })
   },
 
