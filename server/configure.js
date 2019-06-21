@@ -358,13 +358,22 @@ module.exports = (port, spinner) => {
           conf.sessionSecret = buf.toString('hex')
           confRaw = yaml.safeDump(conf)
 
-          // copy the default Home and Guide Page to repo
           const fs = require('fs-extra')
           const homeSrc = path.join(ROOTPATH, '/default_pages/home.md')
           const homeDst = path.join(ROOTPATH, conf.paths.repo + '/home.md')
           const guideSrc = path.join(ROOTPATH, '/default_pages/guide.md')
           const guideDst = path.join(ROOTPATH, conf.paths.repo + '/guide.md')
 
+          try {
+            if (fs.existsSync(homeDst) || fs.existsSync(guideDst)) {
+              return fs.writeFileAsync(path.join(ROOTPATH, 'config.yml'), confRaw)
+            }
+          } catch (err) {
+            console.error(err)
+            throw err
+          }
+
+          // copy the default Home and Guide Page to repo
           return fs.copy(homeSrc, homeDst).then((err) => {
             if (err) throw err
             fs.copy(guideSrc, guideDst).then((err) => {

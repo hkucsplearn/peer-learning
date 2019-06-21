@@ -3,7 +3,7 @@ html(data-logic='configure')
   head
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(charset='UTF-8')
-    title Wiki.js | Configure
+    title Peer Learning
 
     // Favicon
     each favsize in [32, 96, 16]
@@ -24,12 +24,12 @@ html(data-logic='configure')
             a.nav-item
               h1
                 i.icon-layers
-                | Wiki.js
+                | Peer Learning
       main
         .container
           transition(name='tst-welcome')
             .welcome(v-if='state === "welcome" || state === "restart"')
-              img(src='/images/logo.png', alt='Wiki.js')
+              img(src='/images/logo.png', alt='Peer Learning')
               h2 A modern, lightweight and powerful wiki app built on NodeJS, Git and Markdown
           .content(v-cloak)
 
