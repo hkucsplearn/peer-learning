@@ -12,6 +12,8 @@
               p.control.is-fullwidth(v-bind:class='{ "is-loading": isLoading }')
                 input.input(type='text', placeholder='page-name', v-model='userPath', ref='createPageInput', @keyup.enter='create', @keyup.esc='cancel')
                 span.help.is-red(v-show='isInvalid') {{ $t('modal.createpageinvalid') }}
+                span.help.is-red(v-show='isInvalid') {{ $t('modal.createpageinvalid') }}
+                span.help.is-red(v-show='isInvalid') {{ $t('modal.createpageinvalid') }}
             footer
               a.button.is-grey.is-outlined(v-on:click='cancel') {{ $t('modal.discard') }}
               a.button.is-light-blue(v-on:click='create') {{ $t('modal.create') }}
@@ -55,7 +57,27 @@
           this.isInvalid = true
         } else {
           this.isLoading = true
-          window.location.assign('/create/' + newDocPath)
+          this.$http.get('/createcheck/' + newDocPath).then(resp => {
+            return resp.json()
+          }).then(resp => {
+            if (resp.ok) {
+              window.location.assign('/create/' + newDocPath)
+            } else {
+              this.isLoading = false
+              this.$store.dispatch('alert', {
+                style: 'red',
+                icon: 'ui-2_square-remove-09',
+                msg: resp.msg
+              })
+            }
+          }).catch(err => {
+            this.isLoading = false
+            this.$store.dispatch('alert', {
+              style: 'red',
+              icon: 'ui-2_square-remove-09',
+              msg: 'Error: ' + err.body.msg
+            })
+          })
         }
       }
     },

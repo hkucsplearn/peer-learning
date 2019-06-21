@@ -277,6 +277,7 @@ module.exports = {
   deleteFolder(entryPath, author) {
     let self = this
     let gitFilePath = entryPath
+    console.log(gitFilePath)
 
     return this._git.exec('rm', ['-rf', [gitFilePath]]).then((cProc) => {
       let out = cProc.stdout.toString()
