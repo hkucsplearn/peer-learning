@@ -45,7 +45,7 @@ jQuery(document).ready(function ($) {
         results: []
       },
       conf: {
-        title: appconfig.title || 'Wiki',
+        title: appconfig.title || 'Peer Learning',
         host: appconfig.host || 'http://',
         port: appconfig.port || 80,
         lang: appconfig.lang || 'en',
