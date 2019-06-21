@@ -2,6 +2,7 @@
 
 module.exports = (port, spinner) => {
   const path = require('path')
+  const Git = require('git-wrapper2-promise')
 
   const ROOTPATH = process.cwd()
   const SERVERPATH = path.join(ROOTPATH, 'server')
@@ -201,7 +202,7 @@ module.exports = (port, spinner) => {
       },
       () => {
         if (req.body.gitUseRemote === false) { return false }
-        return exec.stdout('git', ['config', '--local', 'user.name', 'Wiki'], { cwd: gitDir }).then(result => {
+        return exec.stdout('git', ['config', '--local', 'user.name', 'Administrator'], { cwd: gitDir }).then(result => {
           return 'Git Signature Name has been set successfully.'
         })
       },
@@ -356,7 +357,37 @@ module.exports = (port, spinner) => {
         return crypto.randomBytesAsync(32).then(buf => {
           conf.sessionSecret = buf.toString('hex')
           confRaw = yaml.safeDump(conf)
-          return fs.writeFileAsync(path.join(ROOTPATH, 'config.yml'), confRaw)
+
+          // copy the default Home and Guide Page to repo
+          const fs = require('fs-extra')
+          const homeSrc = path.join(ROOTPATH, '/default_pages/home.md')
+          const homeDst = path.join(ROOTPATH, conf.paths.repo + '/home.md')
+          const guideSrc = path.join(ROOTPATH, '/default_pages/guide.md')
+          const guideDst = path.join(ROOTPATH, conf.paths.repo + '/guide.md')
+
+          return fs.copy(homeSrc, homeDst).then((err) => {
+            if (err) throw err
+            fs.copy(guideSrc, guideDst).then((err) => {
+              if (err) throw err
+              return true
+            })
+          }).then(() => {
+            // add the default pages to local git
+            const commitUsr = {
+              name: 'Peer Learning System',
+              email: 'plearn@cs.hku.hk'
+            }
+            const gitClient = new Git({ 'git-dir': conf.paths.repo })
+            return gitClient.add(homeDst).then(() => {
+              gitClient.add(guideDst).then(() => {
+                gitClient.exec('commit', ['-m', 'first commit', '--author="' + commitUsr.name + ' <' + commitUsr.email + '>"']).then((childProcess) => {
+                  return true
+                })
+              })
+            }).then(() => {
+              return fs.writeFileAsync(path.join(ROOTPATH, 'config.yml'), confRaw)
+            })
+          })
         })
       })
     ).then(() => {
@@ -368,6 +399,7 @@ module.exports = (port, spinner) => {
     }).then(() => {
       res.json({ ok: true })
     }).catch(err => {
+      console.log(err)
       res.json({ ok: false, error: err.message })
     })
   })

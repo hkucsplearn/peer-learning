@@ -106,7 +106,7 @@ module.exports = {
       self._url = URL.format(urlObj)
 
       let gitConfigs = [
-        () => { return self._git.exec('config', ['--local', 'user.name', 'Wiki']) },
+        () => { return self._git.exec('config', ['--local', 'user.name', 'Administrator']) },
         () => { return self._git.exec('config', ['--local', 'user.email', self._signature.email]) },
         () => { return self._git.exec('config', ['--local', '--bool', 'http.sslVerify', _.toString(appconfig.git.auth.sslVerify)]) }
       ]

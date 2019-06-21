@@ -1,6 +1,6 @@
 title: Peer Learning
-host: 'http://localhost:3500'
-port: 3500
+host: 'http://localhost:3001'
+port: 3001
 paths:
   repo: ./repo
   data: ./data
@@ -10,6 +10,38 @@ uploads:
 lang: en
 langRtl: false
 public: true
+sessionSecret: 6c7aabcb688287ff1d97c5829d51199f812f8b84ce4be821bde3d3f4ed45b8f6
+db: 'mongodb://localhost:27017/peerlearning'
+git:
+  url: 'git@github.com:hkucsplearn/peer-learning-article.git'
+  branch: master
+  auth:
+    type: ssh
+    username: ''
+    password: ''
+    # for windows
+    privateKey: 'C:\Users\Username\.ssh\id_rsa'
+    # for linux/macOS
+    # '/Users/Username/.ssh/id_rsa'
+    sslVerify: true
+  showUserEmail: true
+  serverEmail: chiholau@connect.hku.hk
+  linebreaks: true
+  mathjax: true
+externalLogging:
+  bugsnag: false
+  loggly: false
+  papertrail: false
+  rollbar: false
+  sentry: false
+theme:
+  primary: teal
+  alt: blue-grey
+  viewSource: all
+  footer: blue-grey
+  code:
+    dark: true
+    colorize: true
 auth:
   defaultReadAccess: false
   local:
@@ -65,35 +97,3 @@ auth:
     tokenURL: OPENID_CONNECT_TOKEN_URL
     emailClaim: OPENID_CONNECT_EMAIL_CLAIM_PATH
     usernameClaim: OPENID_CONNECT_USERNAME_CLAIM_PATH
-sessionSecret: 6c7aabcb688287ff1d97c5829d51199f812f8b84ce4be821bde3d3f4ed45b8f6
-db: 'mongodb://localhost:27017/peerlearning'
-git:
-  url: 'git@github.com:hkucsplearn/peer-learning-article.git'
-  branch: master
-  auth:
-    type: ssh
-    username: ''
-    password: ''
-    # for windows
-    privateKey: 'C:\Users\Jeff\.ssh\id_rsa'
-    # for linux/macOS
-    # '/Users/eric/.ssh/id_rsa'
-    sslVerify: true
-  showUserEmail: true
-  serverEmail: chiholau@connect.hku.hk
-  linebreaks: true
-  mathjax: true
-externalLogging:
-  bugsnag: false
-  loggly: false
-  papertrail: false
-  rollbar: false
-  sentry: false
-theme:
-  primary: teal
-  alt: blue-grey
-  viewSource: all
-  footer: blue-grey
-  code:
-    dark: true
-    colorize: true
