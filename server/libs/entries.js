@@ -613,7 +613,7 @@ module.exports = {
    * @return     {Array<String>}  The children entries.
    */
   getChildrenEntry (parentEntryPath) {
-    return db.Entry.find({ _id: new RegExp(parentEntryPath + '*') }, '_id').exec().then((results) => {
+    return db.Entry.find({ _id: new RegExp(`${parentEntryPath}\\/.*`) }, '_id').exec().then((results) => {
       return (results) ? _.map(results, 'name') : [{ name: '' }]
     })
   },
