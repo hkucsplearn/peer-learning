@@ -2,8 +2,8 @@
   "alreadyexists": "This entry already exists!",
   "debugmsg": "Detailed debug trail",
   "fileexists": "File {{path}} already exists.",
-  "forbidden": "Action Forbidden! You have no authority to delete the page!",
-  "forbiddendetail": "Sorry, you don't have the necessary permissions to access this page.",
+  "forbidden": "Action Forbidden! You have no authority to create/edit/delete a page!",
+  "forbiddendetail": "Please login first before amending any page.",
   "forbiddendelete": "Please delete all inner entries of this document first!",
   "forbiddencreate": "Please do not create a page which it's direct parent page does not exist!",
   "generic": "Oops, something went wrong",
@@ -27,6 +27,6 @@
   "actions": {
     "create": "Create",
     "gohome": "Go Home",
-    "loginas": "Login as..."
+    "loginas": "Login"
   }
 }
