@@ -28,7 +28,7 @@
             .current-user
               span.username #{user.name}
               br
-              span.email #{user.email}
+              span.email= `<${user.email}>`
           .nav-item
             .dropdown
               a.button.nav-bar

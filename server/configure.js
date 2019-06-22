@@ -408,7 +408,7 @@ module.exports = (port, spinner) => {
     }).then(() => {
       res.json({ ok: true })
     }).catch(err => {
-      console.log(err)
+      console.error(err)
       res.json({ ok: false, error: err.message })
     })
   })

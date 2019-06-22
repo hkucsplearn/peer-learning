@@ -36,7 +36,7 @@ export default {
         self.$store.dispatch('alert', {
           style: 'red',
           icon: 'square-cross',
-          msg: 'Error: ' + err.body.msg
+          msg: 'Error: ' + err.message
         })
       })
     },

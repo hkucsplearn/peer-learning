@@ -15,7 +15,7 @@ const moment = require('moment')
  */
 const EBstore = new ExpressBruteMongooseStore(db.Bruteforce)
 const bruteforce = new ExpressBrute(EBstore, {
-  freeRetries: 500000000,
+  freeRetries: 5,
   minWait: 60 * 1000,
   maxWait: 5 * 60 * 1000,
   refreshTimeoutOnRequest: false,
@@ -61,6 +61,16 @@ router.post('/login', bruteforce.prevent, function (req, res, next) {
     } else {
       throw err
     }
+  }).catch({ message: 'INVALID_LOGIN' }, () => {
+    // [3] HKU AUTHENTICATION
+    return new Promise((resolve, reject) => {
+      passport.authenticate('hku', function (err, user, info) {
+        if (err) { return reject(err) }
+        if (info && info.message) { return reject(new Error(info.message)) }
+        if (!user) { return reject(new Error('INVALID_LOGIN')) }
+        resolve(user)
+      })(req, res, next)
+    })
   }).then((user) => {
     // LOGIN SUCCESS
     return req.logIn(user, function (err) {

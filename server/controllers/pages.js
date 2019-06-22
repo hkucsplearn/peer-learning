@@ -386,7 +386,7 @@ router.delete('/*', (req, res, next) => {
   let safePath = entryHelper.parsePath(req.path)
 
   return entries.getChildrenEntry(safePath).then((results) => {
-    if (results.length > 1) {
+    if (results.length >= 1) {
       return res.json({
         ok: false,
         msg: lang.t('errors:forbiddendelete')

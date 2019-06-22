@@ -57,7 +57,7 @@
           self.$store.dispatch('alert', {
             style: 'red',
             icon: 'ui-2_square-remove-09',
-            msg: 'Error: ' + err.body.msg
+            msg: 'Error: ' + err.message
           })
         })
       }

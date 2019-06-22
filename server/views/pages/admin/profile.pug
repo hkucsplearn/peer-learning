@@ -11,9 +11,14 @@ block adminContent
         admin-profile(inline-template, email=user.email, name=user.name, provider=user.provider)
           div
             section
-              label.label= t('admin:profile.email')
-              p.control.is-fullwidth
-                input.input(type='text', placeholder=t('admin:profile.email'), value=user.email, disabled)
+              if user.provider === 'hku'
+                label.label= 'HKU Email'
+                p.control.is-fullwidth
+                  input.input(type='text', value=user.email, disabled)
+              else
+                label.label= t('admin:profile.email')
+                p.control.is-fullwidth
+                  input.input(type='text', value=user.email, disabled)
             if user.provider === 'local'
               section
                 label.label= t('admin:profile.password')

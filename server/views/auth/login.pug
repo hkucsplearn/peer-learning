@@ -35,7 +35,7 @@ html(data-logic='login')
         h4= appflash[0].message
       if appconfig.auth.local.enabled
         form(method='post', action='/login')
-          input#login-user(type='text', name='email', placeholder=t('auth:fields.emailuser'))
+          input#login-user(type='text', name='email', placeholder='Email / HKU UID')
           input#login-pass(type='password', name='password', placeholder=t('auth:fields.password'))
           .buttonGroup
             button(type='submit')= t('auth:actions.login')
