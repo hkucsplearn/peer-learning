@@ -37,7 +37,9 @@ html(data-logic='login')
         form(method='post', action='/login')
           input#login-user(type='text', name='email', placeholder=t('auth:fields.emailuser'))
           input#login-pass(type='password', name='password', placeholder=t('auth:fields.password'))
-          button(type='submit')= t('auth:actions.login')
+          .buttonGroup
+            button(type='submit')= t('auth:actions.login')
+            button(id='back_button')= 'Back'
       if appconfig.authStrategies.socialEnabled
         #social
           if appconfig.auth.local.enabled

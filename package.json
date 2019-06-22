@@ -28,13 +28,18 @@
     "markdown",
     "guides"
   ],
-  "contributors": ["Nicolas Giard", "Jeff Siu", "Eric Lau"],
+  "contributors": [
+    "Nicolas Giard",
+    "Jeff Siu",
+    "Eric Lau"
+  ],
   "license": "AGPL-3.0",
   "homepage": "https://github.com/hkucsplearn/peer-learning",
   "engines": {
     "node": ">=6.11.1"
   },
   "dependencies": {
+    "@passport-next/passport-google-oauth2": "1.0.0",
     "auto-load": "~3.0.0",
     "axios": "~0.18.1",
     "bcryptjs-then": "~1.0.1",
@@ -97,7 +102,6 @@
     "passport-azure-ad-oauth2": "0.0.4",
     "passport-facebook": "~2.1.1",
     "passport-github2": "~0.1.10",
-    "@passport-next/passport-google-oauth2": "1.0.0",
     "passport-ldapauth": "~2.0.0",
     "passport-local": "~1.0.0",
     "passport-openidconnect": "~0.0.2",

@@ -75,17 +75,17 @@ block content
                   i.nc-icon-outline.ui-2_time
                   span= t('nav.history')
               if rights.write
-                a.button(href='/edit/' + pageData.meta.path)
+                a.button.is-outlined(href='/edit/' + pageData.meta.path)
                   i.nc-icon-outline.ui-1_edit-76
                   span= t('nav.edit')
-                a.button(v-on:click='$store.dispatch("modalCreatePage/open")')
+                a.button.is-outlined(v-on:click='$store.dispatch("modalCreatePage/open")')
                   i.nc-icon-outline.ui-1_simple-add
                   span= t('nav.create')
             .content-options.only-show-for-mobile
               a.button.is-outlined(href='/source/' + pageData.meta.path)
                 i.nc-icon-outline.education_paper
                 span= t('nav.source')
-              a.button(href='/all')
+              a.button.is-outlined(href='/all')
                 i.nc-icon-outline.design_bullet-list-68
                 span= 'All Articles'
 

@@ -271,6 +271,14 @@ a {
 
 }
 
+.buttonGroup {
+  display: inline-block;
+  display: flex;
+  width: 350px;
+  max-width: 80vw;
+  justify-content: space-evenly;
+}
+
 @include keyframes(bg) {
 	0% {
 		@include prefix(transform, scale(1,1));
