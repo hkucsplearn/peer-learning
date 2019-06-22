@@ -12,8 +12,6 @@
               p.control.is-fullwidth(v-bind:class='{ "is-loading": isLoading }')
                 input.input(type='text', placeholder='page-name', v-model='userPath', ref='createPageInput', @keyup.enter='create', @keyup.esc='cancel')
                 span.help.is-red(v-show='isInvalid') {{ $t('modal.createpageinvalid') }}
-                span.help.is-red(v-show='isInvalid') {{ $t('modal.createpageinvalid') }}
-                span.help.is-red(v-show='isInvalid') {{ $t('modal.createpageinvalid') }}
             footer
               a.button.is-grey.is-outlined(v-on:click='cancel') {{ $t('modal.discard') }}
               a.button.is-light-blue(v-on:click='create') {{ $t('modal.create') }}
@@ -33,7 +31,7 @@
     },
     computed: {
       isShown () {
-        if(this.$store.state.modalCreatePage.shown) {
+        if (this.$store.state.modalCreatePage.shown) {
           this.makeSelection()
         }
         return this.$store.state.modalCreatePage.shown
@@ -75,7 +73,7 @@
             this.$store.dispatch('alert', {
               style: 'red',
               icon: 'ui-2_square-remove-09',
-              msg: 'Error: ' + err.body.msg
+              msg: 'Error: ' + err
             })
           })
         }
