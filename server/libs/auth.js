@@ -350,7 +350,7 @@ module.exports = function (passport) {
           name: 'Guest',
           password: '',
           rights: [{
-            role: 'read',
+            role: 'write',
             path: '/',
             exact: false,
             deny: !appconfig.public

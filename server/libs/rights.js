@@ -56,10 +56,9 @@ module.exports = {
       manage: false
     }
     let rt = []
-    let p = _.chain(req.originalUrl).toLower().trim().replace(/^\/(edit|create)/, '').value()
+    let p = _.chain(req.originalUrl).toLower().trim().replace(/^\/(edit|createcheck|create)/, '').value()
 
     // Load user rights
-
     if (_.isArray(req.user.rights)) {
       rt = req.user.rights
     }
