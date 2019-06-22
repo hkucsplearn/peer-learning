@@ -71,13 +71,13 @@ block content
                 a.button.is-outlined(href='/source/' + pageData.meta.path)
                   i.nc-icon-outline.education_paper
                   span= t('nav.source')
-              if rights.write
-                a.button.is-outlined(href='/edit/' + pageData.meta.path)
-                  i.nc-icon-outline.ui-1_edit-76
-                  span= t('nav.edit')
-                a.button.is-outlined(v-on:click='$store.dispatch("modalCreatePage/open")')
-                  i.nc-icon-outline.ui-1_simple-add
-                  span= t('nav.create')
+                  
+              a.button.is-outlined(href='/edit/' + pageData.meta.path)
+                i.nc-icon-outline.ui-1_edit-76
+                span= t('nav.edit')
+              a.button.is-outlined(v-on:click='$store.dispatch("modalCreatePage/open")')
+                i.nc-icon-outline.ui-1_simple-add
+                span= t('nav.create')
             .content-options.only-show-for-mobile
               a.button.is-outlined(href='/source/' + pageData.meta.path)
                 i.nc-icon-outline.education_paper
