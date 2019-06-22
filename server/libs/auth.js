@@ -4,6 +4,37 @@
 
 const fs = require('fs')
 const _ = require('lodash')
+const axios = require('axios')
+const querystring = require('querystring')
+
+const hkuAuth = async (hkuUsername, uPassword) => {
+  return axios({
+    url: 'https://hkuportal.hku.hk/cas/servlet/edu.yale.its.tp.cas.servlet.Login',
+    method: 'POST',
+    headers: {
+      'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+      'cache-control': 'no-cache',
+      'content-type': 'application/x-www-form-urlencoded',
+      'dnt': '1',
+      'pragma': 'no-cache',
+      'access-control-allow-origin': '*',
+      'upgrade-insecure-requests': '1'
+    },
+    data: querystring.stringify({
+      'username': hkuUsername,
+      'password': uPassword
+    })
+  }).then(response => {
+    if (response.data.indexOf('Login successful') !== -1) {
+      return true
+    } else {
+      return false
+    }
+  }).catch((err) => {
+    console.error(err)
+    return false
+  })
+}
 
 module.exports = function (passport) {
   // Serialization user methods
@@ -46,6 +77,58 @@ module.exports = function (passport) {
           }
         }).catch((err) => {
           done(err, null)
+        })
+      }
+      ))
+  }
+
+  // HKU Account
+  if (appconfig.auth.local && appconfig.auth.local.enabled) {
+    const LocalStrategy = require('passport-local').Strategy
+    const provider = 'hku'
+    passport.use('hku',
+      new LocalStrategy({
+        usernameField: 'email',
+        passwordField: 'password'
+      }, (uEmailORUID, uPassword, done) => {
+        let hkuUsername = uEmailORUID.split('@')[0]
+        let hkuEmail = hkuUsername + '@hku.hk'
+
+        hkuAuth(hkuUsername, uPassword).then(isPass => {
+          if (isPass) {
+            db.User.findOne({ email: hkuEmail, provider }).then((user) => {
+              if (user) {
+                return done(null, user) || true
+              } else {
+                // first time login, create user in DB
+                let nUsr = {
+                  email: hkuEmail,
+                  provider,
+                  name: hkuUsername,
+                  rights: [{
+                    role: 'write',
+                    path: '/',
+                    exact: false,
+                    deny: false
+                  }]
+                }
+                return db.User.create(nUsr).then((user) => {
+                  return done(null, user) || true
+                }).catch(err => {
+                  if (err) console.error(err)
+                  return done(new Error(err.message), null)
+                })
+              }
+            }).catch(err => {
+              if (err) console.error(err)
+              return done(new Error(err.message), null, null)
+            })
+          } else {
+            // auth fails
+            return done(new Error('INVALID_LOGIN'), null)
+          }
+        }).catch((err) => {
+          return done(err, null)
         })
       }
       ))

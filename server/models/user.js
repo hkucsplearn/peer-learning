@@ -97,7 +97,7 @@ userSchema.statics.processProfile = (profile) => {
         password: '',
         name,
         rights: [{
-          role: 'read',
+          role: 'write',
           path: '/',
           exact: false,
           deny: false

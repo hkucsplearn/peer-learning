@@ -45,6 +45,9 @@ router.post('/profile', (req, res) => {
           return usr.save()
         })
       }
+    } else if (usr.provider === 'hku') {
+      usr.name = _.trim(req.body.name)
+      return usr.save()
     } else {
       return usr.save()
     }
