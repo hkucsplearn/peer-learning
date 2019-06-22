@@ -25,8 +25,9 @@ export default {
     },
     save() {
       let self = this
+      let checkPath = window.location.href.replace(siteRoot, '')
 
-      if (contentBeforeEdit === mde.value()) {
+      if (contentBeforeEdit === mde.value() && checkPath.substr(0, 7) !== '/create') {
         // no changes made, simply exit
         window.location.assign(siteRoot + '/' + self.currentPath)
         return
