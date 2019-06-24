@@ -8,32 +8,33 @@ const axios = require('axios')
 const querystring = require('querystring')
 
 const hkuAuth = async (hkuUsername, uPassword) => {
-  return axios({
-    url: 'https://hkuportal.hku.hk/cas/servlet/edu.yale.its.tp.cas.servlet.Login',
-    method: 'POST',
-    headers: {
-      'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-      'cache-control': 'no-cache',
-      'content-type': 'application/x-www-form-urlencoded',
-      'dnt': '1',
-      'pragma': 'no-cache',
-      'access-control-allow-origin': '*',
-      'upgrade-insecure-requests': '1'
-    },
-    data: querystring.stringify({
-      'username': hkuUsername,
-      'password': uPassword
-    })
-  }).then(response => {
-    if (response.data.indexOf('Login successful') !== -1) {
-      return true
-    } else {
-      return false
-    }
-  }).catch((err) => {
-    console.error(err)
-    return false
-  })
+  return false
+  // return axios({
+  //   url: 'https://hkuportal.hku.hk/cas/servlet/edu.yale.its.tp.cas.servlet.Login',
+  //   method: 'POST',
+  //   headers: {
+  //     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+  //     'cache-control': 'no-cache',
+  //     'content-type': 'application/x-www-form-urlencoded',
+  //     'dnt': '1',
+  //     'pragma': 'no-cache',
+  //     'access-control-allow-origin': '*',
+  //     'upgrade-insecure-requests': '1'
+  //   },
+  //   data: querystring.stringify({
+  //     'username': hkuUsername,
+  //     'password': uPassword
+  //   })
+  // }).then(response => {
+  //   if (response.data.indexOf('Login successful') !== -1) {
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }).catch((err) => {
+  //   console.error(err)
+  //   return false
+  // })
 }
 
 module.exports = function (passport) {
