@@ -467,7 +467,7 @@ module.exports = {
     let fpath = entryHelper.getFullPath(entryPath)
     let upathDB = entryPath
     let upathInitShort = 'uploads/' + entryPath + '/initializeFolder'
-    let upathInit = entryHelper.getUploadFullPath(entryPath) + '\\initializeFolder.md'
+    let upathInit = entryHelper.getUploadFullPath(entryPath) + '/initializeFolder.md'
 
     return fs.outputFileAsync(fpath, contents).then(() => {
       return fs.outputFileAsync(upathInit, 'At the time you see this file, it has no use. Feel free to delete this file!').then(() => {
@@ -613,7 +613,7 @@ module.exports = {
    * @return     {Array<String>}  The children entries.
    */
   getChildrenEntry (parentEntryPath) {
-    return db.Entry.find({ _id: new RegExp(`${parentEntryPath}\\/.*`) }, '_id').exec().then((results) => {
+    return db.Entry.find({ _id: new RegExp(`${parentEntryPath}/.*`) }, '_id').exec().then((results) => {
       return (results) ? _.map(results, 'name') : [{ name: '' }]
     })
   },
