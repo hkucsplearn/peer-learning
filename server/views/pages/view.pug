@@ -5,6 +5,14 @@ mixin tocMenu(silibingList)
     li
       a(href=item, title=item)= item.substr(1, item.length + 1)
 
+mixin tocMenuForTree(ti)
+  each node in ti
+    li
+      a(href='#' + node.anchor, title=node.content)= node.content
+      if node.nodes.length > 0
+        ul
+          +tocMenuForTree(node.nodes)
+
 mixin displayParentPath(pathList)
   each item in pathList
     span= t(' / ')
@@ -36,13 +44,20 @@ block content
                   a(href='/' + pageData.parent.path)
                     i.icon-reply
                     span= pageData.parent.title
+          
           aside.sidebar-relatedtopics
             .sidebar-label
               span= t('sidebar.relatedtopics')
             ul.sidebar-menu
+              +tocMenu(pageSilibingList)
+          
+          aside.sidebar-pagecontents
+            .sidebar-label
+              span= 'Contents'
+            ul.sidebar-menu
               li.is-hidden-until-scroll: a(href='#root', title='Top of Page')
                 i.icon-arrow-up2
-              +tocMenu(pageSilibingList)
+              +tocMenuForTree(pageData.tree)
 
         .column
           .current-path
