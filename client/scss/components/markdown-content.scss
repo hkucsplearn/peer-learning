@@ -246,11 +246,14 @@
 	}
 
 	code {
-		font-weight: 500;
-		color: mc('purple', '500');
-		background-color: lighten(mc('purple', '50'), 5%);
-		padding: 0 5px;
-		border-radius: 4px;
+    font-size: 85%;
+    font-weight: 400;
+		color:  mc('blue-grey', '100');
+		background-color: mc('blue-grey', '900');
+    padding: .2em .4em;
+    border-radius: 3px;
+    margin: 0;
+    font-family: $core-font-monospace;
 	}
 
 	pre {

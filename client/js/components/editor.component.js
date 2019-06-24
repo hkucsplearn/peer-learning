@@ -128,8 +128,11 @@ export default {
             name: 'link',
             action: (editor) => {
               if (editor.codemirror.doc.getSelection().replace(/\s/g, '') === '') {
-                window.alert('Please select text first')
-                return
+                return self.$store.dispatch('alert', {
+                  style: 'orange',
+                  icon: 'design_drag',
+                  msg: 'Invalid selection. Select at least 1 character.'
+                })
               }
 
               let inputedUrl = ''
