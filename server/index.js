@@ -156,6 +156,9 @@ app.use(bodyParser.urlencoded({ extended: false, limit: '1mb' }))
 // View accessible data
 // ----------------------------------------
 
+const momentTimezone = require('moment-timezone')
+momentTimezone.tz.setDefault('asia/hong_kong')
+
 app.locals._ = require('lodash')
 app.locals.t = global.lang.t.bind(global.lang)
 app.locals.moment = require('moment')
