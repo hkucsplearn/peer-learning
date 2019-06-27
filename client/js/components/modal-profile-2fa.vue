@@ -10,7 +10,7 @@
               header.is-blue Setup your 2FA app
               section.modal-loading
                 i
-                span Wiki.js {{ mode }} in progress...
+                span Peer Learning {{ mode }} in progress...
                 em Please wait
             template(v-if='step === "error"')
               header.is-red Error

@@ -1,7 +1,7 @@
 'use strict'
 
 // ===========================================
-// Wiki.js
+// Peer Learning
 // 1.0.0
 // Licensed under AGPLv3
 // ===========================================
@@ -29,7 +29,7 @@ global.appdata = appconf.data
 // ----------------------------------------
 
 global.winston = require('./libs/logger')(IS_DEBUG, 'SERVER')
-global.winston.info('Wiki.js is initializing...')
+global.winston.info('Peer Learning is initializing...')
 
 // ----------------------------------------
 // Load global modules

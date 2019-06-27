@@ -35,7 +35,7 @@ module.exports = {
           minUptime: 5000,
           maxRestarts: 5
         }).then(() => {
-          spinner.succeed('Wiki.js has started successfully.')
+          spinner.succeed('Peer Learning has started successfully.')
         }).finally(() => {
           pm2.disconnect()
         })
@@ -53,13 +53,13 @@ module.exports = {
     process.exit(1)
   },
   /**
-   * Stop Wiki.js process(es)
+   * Stop Peer Learning process(es)
    */
   stop () {
-    let spinner = ora('Shutting down Wiki.js...').start()
+    let spinner = ora('Shutting down Peer Learning...').start()
     return pm2.connectAsync().then(() => {
       return pm2.stopAsync('wiki').then(() => {
-        spinner.succeed('Wiki.js has stopped successfully.')
+        spinner.succeed('Peer Learning has stopped successfully.')
       }).finally(() => {
         pm2.disconnect()
       })
@@ -69,7 +69,7 @@ module.exports = {
     })
   },
   /**
-   * Restart Wiki.js process(es)
+   * Restart Peer Learning process(es)
    */
   restart: function () {
     let self = this

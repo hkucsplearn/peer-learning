@@ -41,6 +41,8 @@ auth:
   defaultReadAccess: false
   local:
     enabled: true
+  hku:
+    enabled: true
   google:
     enabled: false
     clientId: GOOGLE_CLIENT_ID

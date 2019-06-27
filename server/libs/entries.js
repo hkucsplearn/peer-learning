@@ -376,7 +376,6 @@ module.exports = {
       return err
     }).then((content) => {
       let parentPath = _.chain(content.entryPath).split('/').initial().join('/').value()
-
       return db.Entry.findOneAndUpdate({
         _id: content.entryPath
       }, {
@@ -641,21 +640,10 @@ module.exports = {
     })
   },
 
-  getHistory(entryPath, repeat) {
+  getHistory(entryPath) {
     return db.Entry.findOne({ _id: entryPath, isEntry: true }).then(entry => {
       if (!entry) {
-        if (repeat === undefined) {
-          // try to update db via cache
-          this.updateCache(entryPath)
-            .then(_ => {
-              return this.getHistory(entryPath, true)
-            })
-            .catch(err => {
-              winston.error(err)
-            })
-        } else {
-          return false
-        }
+        return false
       }
       return git.getHistory(entryPath).then(history => {
         return {
@@ -666,21 +654,10 @@ module.exports = {
     })
   },
 
-  getLastEdit(entryPath, repeat) {
+  getLastEdit(entryPath) {
     return db.Entry.findOne({ _id: entryPath, isEntry: true }).then(entry => {
       if (!entry) {
-        if (repeat === undefined) {
-          // try to update db via cache
-          this.updateCache(entryPath)
-            .then(_ => {
-              return this.getLastEdit(entryPath, true)
-            })
-            .catch(err => {
-              winston.error(err)
-            })
-        } else {
-          return false
-        }
+        return false
       }
       return git.getLastEdit(entryPath).then(history => {
         return history[0]

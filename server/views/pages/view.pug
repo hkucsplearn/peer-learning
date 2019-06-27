@@ -73,7 +73,10 @@ block content
                 span= pageData.lastEdit.dateFull
               .author
                 span= 'By '
-                span= `${pageData.lastEdit.authorName} <${pageData.lastEdit.authorEmail}>`
+                if rights.manage
+                  span= `${pageData.lastEdit.authorName} <${pageData.lastEdit.authorEmail}>`
+                else
+                  span= `${pageData.lastEdit.authorName}`
 
             .content-options.is-hidden-mobile
               if rights.write && !(['home', 'guide'].includes(pageData.meta.path))

@@ -10,7 +10,7 @@
               header.is-blue Install
               section.modal-loading
                 i
-                span Wiki.js {{ mode }} in progress...
+                span Peer Learning {{ mode }} in progress...
                 em Please wait
             template(v-if='step === "error"')
               header.is-red Installation Error
@@ -22,8 +22,8 @@
             template(v-if='step === "confirm"')
               header.is-deep-orange Are you sure?
               section
-                label.label You are about to {{ mode }} Wiki.js.
-                span.note You will not be able to access your wiki during the operation. Content will not be affected. However, it is your responsibility to ensure you have a backup in the unexpected event content gets lost or corrupted.
+                label.label You are about to {{ mode }} Peer Learning.
+                span.note You will not be able to access Peer Learning during the operation. Content will not be affected. However, it is your responsibility to ensure you have a backup in the unexpected event content gets lost or corrupted.
               footer
                 a.button.is-grey.is-outlined(@click='upgradeCancel') Abort
                 a.button.is-deep-orange(@click='upgradeStart') Start

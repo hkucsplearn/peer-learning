@@ -1,5 +1,5 @@
 // ===========================================
-// Wiki.js - Background Agent
+// Peer Learning - Background Agent
 // 1.0.0
 // Licensed under AGPLv3
 // ===========================================

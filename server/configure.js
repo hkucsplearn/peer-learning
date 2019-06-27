@@ -423,7 +423,7 @@ module.exports = (port, spinner) => {
       _.delay(() => {
         const exec = require('execa')
         exec.stdout('node', ['wiki', 'start']).then(result => {
-          spinner.succeed('Wiki.js is now running in normal mode!')
+          spinner.succeed('Peer Learning is now running in normal mode!')
           process.exit(0)
         })
       }, 1000)

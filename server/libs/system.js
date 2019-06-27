@@ -20,7 +20,7 @@ module.exports = {
   _installDir: '',
 
   /**
-   * Install a version of Wiki.js
+   * Install a version of Peer Learning
    *
    * @param {any} targetTag The version to install
    * @returns {Promise} Promise of the operation
@@ -66,9 +66,9 @@ module.exports = {
     }).then(() => {
       winston.info('[SERVER.System] Cleaning install leftovers...')
       return fs.removeAsync(self._installDir).then(() => {
-        winston.info('[SERVER.System] Restarting Wiki.js...')
+        winston.info('[SERVER.System] Restarting Peer Learning...')
         return pm2.restartAsync('wiki').catch(err => { // eslint-disable-line handle-callback-err
-          winston.error('Unable to restart Wiki.js via pm2... Do a manual restart!')
+          winston.error('Unable to restart Peer Learning via pm2... Do a manual restart!')
           process.exit()
         })
       })

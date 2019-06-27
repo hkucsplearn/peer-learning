@@ -257,8 +257,14 @@ router.get('/source/*', (req, res, next) => {
 router.get('/hist/*', (req, res, next) => {
   let safePath = entryHelper.parsePath(_.replace(req.path, '/hist', ''))
 
-  entries.getHistory(safePath).then((pageData) => {
+  entries.getHistory(safePath).then((data) => {
+    const pageData = Object.assign({}, data)
     if (pageData) {
+      if (!res.locals.rights.manage && pageData.history) {
+        pageData.history.forEach(cm => {
+          cm.authorEmail = ''
+        })
+      }
       res.render('pages/history', { pageData })
     } else {
       throw new Error(lang.t('errors:invalidpath'))
@@ -300,22 +306,50 @@ router.post('/hist', (req, res, next) => {
  */
 router.get('/*', (req, res, next) => {
   let safePath = entryHelper.parsePath(req.path)
-
   entries.fetch(safePath).then((pageData) => {
-    if (pageData) {
-      entries.getPageSilibing(safePath).then((pageSilibingList) => {
-        entries.getParentList(safePath).then((parentList) => {
-          entries.getLastEdit(safePath).then((lastEdit) => {
-            pageData.lastEdit = lastEdit
-            res.render('pages/view', { pageData, parentList, pageSilibingList })
+    global.db.Entry.findOne({ _id: safePath, isEntry: true }).then((entry) => {
+      if (entry) {
+        entries.getPageSilibing(safePath).then((pageSilibingList) => {
+          entries.getParentList(safePath).then((parentList) => {
+            entries.getLastEdit(safePath).then((lastEdit) => {
+              if (!res.locals.rights.manage && lastEdit) {
+                lastEdit.authorEmail = ''
+              }
+              pageData.lastEdit = lastEdit
+              res.render('pages/view', { pageData, parentList, pageSilibingList })
+            })
           })
         })
-      })
-    } else {
-      res.status(404).render('error-notexist', {
-        newpath: safePath
-      })
-    }
+      } else {
+        entries.updateCache(safePath).then(() => {
+          // also see line 79 of server/agent.js
+          entries.fetch(safePath).then((pageData) => {
+            if (pageData) {
+              entries.getPageSilibing(safePath).then((pageSilibingList) => {
+                entries.getParentList(safePath).then((parentList) => {
+                  entries.getLastEdit(safePath).then((lastEdit) => {
+                    if (!res.locals.rights.manage && lastEdit) {
+                      lastEdit.authorEmail = ''
+                    }
+                    pageData.lastEdit = lastEdit
+                    res.render('pages/view', { pageData, parentList, pageSilibingList })
+                  })
+                })
+              })
+            } else {
+              res.status(404).render('error-notexist', {
+                newpath: safePath
+              })
+            }
+          })
+        }).catch(err => {
+          winston.error(err)
+          res.status(404).render('error-notexist', {
+            newpath: safePath
+          })
+        })
+      }
+    })
     return true
   }).error((err) => {
     if (safePath === 'home') {

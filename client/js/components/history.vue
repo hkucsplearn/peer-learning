@@ -20,8 +20,13 @@
                   i.nc-icon-outline.ui-1_calendar-check-62
                   span {{ $t('history.timestamp') }}: #[strong {{ current.dateFull }}]
                 p
-                  i.nc-icon-outline.i.nc-icon-outline.users_man-23
-                  span {{ $t('history.author') }}: #[strong {{ current.authorName }} &lt;{{ current.authorEmail }}&gt;]
+                  div(v-if='current.authorEmail!==""')
+                    i.nc-icon-outline.i.nc-icon-outline.users_man-23
+                    span() {{ $t('history.author') }}: #[strong {{ current.authorName }} &lt;{{ current.authorEmail }}&gt;]
+                  div(v-else)
+                    i.nc-icon-outline.i.nc-icon-outline.users_man-23
+                    span() {{ $t('history.author') }}: #[strong {{ current.authorName }}]
+
                 //- p
                 //-   i.nc-icon-outline.media-1_flash-21
                 //-   span {{ $t('history.commit') }}: #[strong {{ current.commit }}]

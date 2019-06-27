@@ -2,7 +2,7 @@
 'use strict'
 
 // ===========================================
-// Wiki.js
+// Peer Learning
 // 1.0.0
 // Licensed under AGPLv3
 // ===========================================
@@ -14,7 +14,7 @@ require('yargs') // eslint-disable-line no-unused-expressions
   .command({
     command: 'start',
     alias: ['boot', 'init'],
-    desc: 'Start Wiki.js process',
+    desc: 'Start Peer Learning process',
     handler: argv => {
       init.startDetect()
     }
@@ -22,7 +22,7 @@ require('yargs') // eslint-disable-line no-unused-expressions
   .command({
     command: 'stop',
     alias: ['quit', 'exit'],
-    desc: 'Stop Wiki.js process',
+    desc: 'Stop Peer Learning process',
     handler: argv => {
       init.stop()
     }
@@ -30,7 +30,7 @@ require('yargs') // eslint-disable-line no-unused-expressions
   .command({
     command: 'restart',
     alias: ['reload'],
-    desc: 'Restart Wiki.js process',
+    desc: 'Restart Peer Learning process',
     handler: argv => {
       init.restart()
     }
@@ -38,7 +38,7 @@ require('yargs') // eslint-disable-line no-unused-expressions
   .command({
     command: 'configure [port]',
     alias: ['config', 'conf', 'cfg', 'setup'],
-    desc: 'Configure Wiki.js using the web-based setup wizard',
+    desc: 'Configure Peer Learning using the web-based setup wizard',
     builder: (yargs) => yargs.default('port', 3000),
     handler: argv => {
       init.configure(argv.port)
@@ -48,5 +48,4 @@ require('yargs') // eslint-disable-line no-unused-expressions
   .demandCommand(1, 'You must provide one of the accepted commands above.')
   .help()
   .version()
-  .epilogue('Read the docs at https://wiki.requarks.io')
   .argv

@@ -9,6 +9,8 @@ const passport = require('passport')
 const ExpressBrute = require('express-brute')
 const ExpressBruteMongooseStore = require('express-brute-mongoose')
 const moment = require('moment')
+const url = require('url')
+const dns = require('dns')
 
 /**
  * Setup Express-Brute
@@ -39,6 +41,43 @@ router.get('/login', function (req, res, next) {
   })
 })
 
+router.post('/login/:token', bruteforce.prevent, (req, res, next) => {
+  const authToken = req.params.token
+
+  new Promise((resolve, reject) => {
+    // [3] HKU AUTHENTICATION
+    passport.authenticate('hku', (err, user, info) => {
+      if (err) { return reject(err) }
+      if (info && info.message) { return reject(new Error(info.message)) }
+      if (!user) { return reject(new Error('INVALID_LOGIN')) }
+      resolve(user)
+    })(req, res, next)
+  }).then((user) => {
+    // LOGIN SUCCESS
+    return req.logIn(user, (err) => {
+      if (err) { return next(err) }
+      req.brute.reset(() => {
+        return res.redirect(req.session.redirectTo || '/')
+      })
+    }) || true
+  }).catch(err => {
+    // LOGIN FAIL
+    if (err.message === 'INVALID_LOGIN') {
+      req.flash('alert', {
+        title: lang.t('auth:errors.invalidlogin'),
+        message: lang.t('auth:errors.invalidloginmsg')
+      })
+      return res.redirect('/login')
+    } else {
+      req.flash('alert', {
+        title: lang.t('auth:errors.loginerror'),
+        message: err.message
+      })
+      return res.redirect('/login')
+    }
+  })
+})
+
 router.post('/login', bruteforce.prevent, function (req, res, next) {
   new Promise((resolve, reject) => {
     // [1] LOCAL AUTHENTICATION
@@ -61,21 +100,11 @@ router.post('/login', bruteforce.prevent, function (req, res, next) {
     } else {
       throw err
     }
-  }).catch({ message: 'INVALID_LOGIN' }, () => {
-    // [3] HKU AUTHENTICATION
-    return new Promise((resolve, reject) => {
-      passport.authenticate('hku', function (err, user, info) {
-        if (err) { return reject(err) }
-        if (info && info.message) { return reject(new Error(info.message)) }
-        if (!user) { return reject(new Error('INVALID_LOGIN')) }
-        resolve(user)
-      })(req, res, next)
-    })
   }).then((user) => {
     // LOGIN SUCCESS
-    return req.logIn(user, function (err) {
+    return req.logIn(user, (err) => {
       if (err) { return next(err) }
-      req.brute.reset(function () {
+      req.brute.reset(() => {
         return res.redirect(req.session.redirectTo || '/')
       })
     }) || true
@@ -94,6 +123,33 @@ router.post('/login', bruteforce.prevent, function (req, res, next) {
       })
       return res.redirect('/login')
     }
+  })
+})
+
+router.post('/redirect-to-hkucas', (req, res, next) => {
+  res.redirect(303, url.format(
+    {
+      pathname: 'https://i.cs.hku.hk/~plearn/',
+      query: {
+        's': 1,
+        't': 2
+      }
+    }
+  ))
+})
+
+router.post('/hku-login-result', (req, res, next) => {
+  dns.lookup('i.cs.hku.hk', (err, addresses, family) => {
+    if (err) {
+      console.error(err.message)
+    }
+    const clientIPAdress = req.connection.remoteAddress
+
+    if (clientIPAdress !== addresses) {
+      return res.status(401).json({success: false, message: '401 Unauthorized'})
+    }
+
+    return res.status(200).json({success: true, message: 'OK'})
   })
 })
 

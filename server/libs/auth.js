@@ -4,38 +4,7 @@
 
 const fs = require('fs')
 const _ = require('lodash')
-const axios = require('axios')
-const querystring = require('querystring')
-
-const hkuAuth = async (hkuUsername, uPassword) => {
-  return false
-  // return axios({
-  //   url: 'https://hkuportal.hku.hk/cas/servlet/edu.yale.its.tp.cas.servlet.Login',
-  //   method: 'POST',
-  //   headers: {
-  //     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-  //     'cache-control': 'no-cache',
-  //     'content-type': 'application/x-www-form-urlencoded',
-  //     'dnt': '1',
-  //     'pragma': 'no-cache',
-  //     'access-control-allow-origin': '*',
-  //     'upgrade-insecure-requests': '1'
-  //   },
-  //   data: querystring.stringify({
-  //     'username': hkuUsername,
-  //     'password': uPassword
-  //   })
-  // }).then(response => {
-  //   if (response.data.indexOf('Login successful') !== -1) {
-  //     return true
-  //   } else {
-  //     return false
-  //   }
-  // }).catch((err) => {
-  //   console.error(err)
-  //   return false
-  // })
-}
+const CustomStrategy = require('passport-custom').Strategy
 
 module.exports = function (passport) {
   // Serialization user methods
@@ -84,55 +53,42 @@ module.exports = function (passport) {
   }
 
   // HKU Account
-  if (appconfig.auth.local && appconfig.auth.local.enabled) {
-    const LocalStrategy = require('passport-local').Strategy
-    const provider = 'hku'
+  // *** no authentication process is done here. ***
+  // *** This CustomStrategy is used after HKU portal authentication is done and successfull! ***
+  if (appconfig.auth.hku && appconfig.auth.hku.enabled) {
     passport.use('hku',
-      new LocalStrategy({
-        usernameField: 'email',
-        passwordField: 'password'
-      }, (uEmailORUID, uPassword, done) => {
-        let hkuUsername = uEmailORUID.split('@')[0]
-        let hkuEmail = hkuUsername + '@hku.hk'
-
-        hkuAuth(hkuUsername, uPassword).then(isPass => {
-          if (isPass) {
-            db.User.findOne({ email: hkuEmail, provider }).then((user) => {
-              if (user) {
-                return done(null, user) || true
-              } else {
-                // first time login, create user in DB
-                let nUsr = {
-                  email: hkuEmail,
-                  provider,
-                  name: hkuUsername,
-                  rights: [{
-                    role: 'write',
-                    path: '/',
-                    exact: false,
-                    deny: false
-                  }]
-                }
-                return db.User.create(nUsr).then((user) => {
-                  return done(null, user) || true
-                }).catch(err => {
-                  if (err) console.error(err)
-                  return done(new Error(err.message), null)
-                })
-              }
+      new CustomStrategy((req, done) => {
+        const hkuEmail = req.body.uid + '@hku.hk'
+        const provider = 'hku'
+        db.User.findOne({ email: hkuEmail, provider }).then((user) => {
+          if (user) {
+            return done(null, user) || true
+          } else {
+            // first time login, create user in DB
+            let nUsr = {
+              email: hkuEmail,
+              provider,
+              name: 'CS Learner',
+              rights: [{
+                role: 'write',
+                path: '/',
+                exact: false,
+                deny: false
+              }]
+            }
+            return db.User.create(nUsr).then((user) => {
+              return done(null, user) || true
             }).catch(err => {
               if (err) console.error(err)
-              return done(new Error(err.message), null, null)
+              return done(new Error(err.message), null)
             })
-          } else {
-            // auth fails
-            return done(new Error('INVALID_LOGIN'), null)
           }
-        }).catch((err) => {
-          return done(err, null)
+        }).catch(err => {
+          if (err) console.error(err)
+          return done(new Error(err.message), null)
         })
-      }
-      ))
+      })
+    )
   }
 
   // Google ID

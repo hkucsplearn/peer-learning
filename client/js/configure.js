@@ -50,7 +50,7 @@ jQuery(document).ready(function ($) {
         port: appconfig.port || 80,
         lang: appconfig.lang || 'en',
         public: (appconfig.public === true),
-        db: appconfig.db || 'mongodb://localhost:27017/wiki',
+        db: appconfig.db || 'mongodb://localhost:27017/peerlearning',
         pathData: './data',
         pathRepo: './repo',
         gitUseRemote: (appconfig.git !== false),
