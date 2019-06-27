@@ -51,13 +51,6 @@ block adminContent
             case user.provider
               when 'local': i.nc-icon-outline.ui-1_database
               when 'hku': i.nc-icon-outline.education_hat
-              when 'windowslive': i.icon-windows2.is-blue
-              when 'azure': i.icon-windows2.is-blue
-              when 'google': i.icon-google.is-blue
-              when 'facebook': i.icon-facebook.is-indigo
-              when 'github': i.icon-github.is-grey
-              when 'slack': i.icon-slack.is-purple
-              when 'ldap': i.icon-arrow-repeat-outline
               default: i.icon-warning
             = t('auth:providers.' + user.provider)
           label.label= t('admin:profile.membersince')
