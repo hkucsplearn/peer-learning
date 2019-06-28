@@ -26,19 +26,30 @@ export default {
   methods: {
     saveTheme() {
       let self = this
-      this.$http.post(window.location.href, self.$data).then(resp => {
-        self.$store.dispatch('alert', {
-          style: 'green',
-          icon: 'check',
-          msg: 'Theme settings have been applied successfully.'
+      this.$http.post(window.location.href, self.$data)
+        .then(resp => {
+          return resp.json()
+        }).then(resp => {
+          if (resp.ok) {
+            self.$store.dispatch('alert', {
+              style: 'green',
+              icon: 'check',
+              msg: 'Theme settings have been applied successfully.'
+            })
+          } else {
+            self.$store.dispatch('alert', {
+              style: 'red',
+              icon: 'square-cross',
+              msg: 'Error: ' + resp.msg
+            })
+          }
+        }).catch(err => {
+          self.$store.dispatch('alert', {
+            style: 'red',
+            icon: 'square-cross',
+            msg: 'Error: ' + err.message
+          })
         })
-      }).catch(err => {
-        self.$store.dispatch('alert', {
-          style: 'red',
-          icon: 'square-cross',
-          msg: 'Error: ' + err.message
-        })
-      })
     },
     resetTheme() {
       this.primary = 'indigo'

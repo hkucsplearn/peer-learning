@@ -44,11 +44,21 @@ export default {
         name: this.name,
         rights: JSON.stringify(formattedRights)
       }).then(resp => {
-        self.$store.dispatch('alert', {
-          style: 'green',
-          icon: 'check',
-          msg: 'Changes have been applied successfully.'
-        })
+        return resp.json()
+      }).then(resp => {
+        if (resp.ok) {
+          self.$store.dispatch('alert', {
+            style: 'green',
+            icon: 'check',
+            msg: 'Changes have been applied successfully.'
+          })
+        } else {
+          self.$store.dispatch('alert', {
+            style: 'red',
+            icon: 'square-cross',
+            msg: 'Error: ' + resp.msg
+          })
+        }
       }).catch(err => {
         self.$store.dispatch('alert', {
           style: 'red',

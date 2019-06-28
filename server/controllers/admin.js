@@ -13,6 +13,9 @@ const fs = Promise.promisifyAll(require('fs-extra'))
 const os = require('os')
 const filesize = require('filesize.js')
 
+const reservedUsernameList = ['admin', 'administrator', 'administrators']
+const reservedCharForUsername = ';'
+
 /**
  * Admin
  */
@@ -34,7 +37,14 @@ router.post('/profile', (req, res) => {
   }
 
   return db.User.findById(req.user.id).then((usr) => {
-    usr.name = _.trim(req.body.name)
+    // handle submitted name
+    if (reservedUsernameList.includes(req.body.name.toLowerCase())) {
+      throw new Error('Reserved name not allowed')
+    } else {
+      usr.name = _.trim(req.body.name).replace(reservedCharForUsername, '')
+    }
+
+    // handle submitted password
     if (usr.provider === 'local' && req.body.password !== '********') {
       let nPwd = _.trim(req.body.password)
       if (nPwd.length < 6) {
@@ -45,16 +55,13 @@ router.post('/profile', (req, res) => {
           return usr.save()
         })
       }
-    } else if (usr.provider === 'hku') {
-      usr.name = _.trim(req.body.name)
-      return usr.save()
     } else {
       return usr.save()
     }
   }).then(() => {
-    return res.json({ msg: 'OK' })
+    return res.json({ ok: true })
   }).catch((err) => {
-    res.status(400).json({ msg: err.message })
+    return res.status(200).json({ msg: err.message })
   })
 })
 
@@ -109,7 +116,7 @@ router.get('/users/:id', (req, res) => {
         canBeDeleted: (usr.email !== 'guest' && !(usr.provider === 'local' && usr.email === req.app.locals.appconfig.admin))
       }
 
-      res.render('pages/admin/users-edit', { adminTab: 'users', usr, usrOpts })
+      return res.render('pages/admin/users-edit', { adminTab: 'users', usr, usrOpts })
     }).catch(err => { // eslint-disable-line handle-callback-err
       return res.status(404).end() || true
     })
@@ -127,22 +134,24 @@ router.post('/users/create', (req, res) => {
     email: _.toLower(_.trim(req.body.email)),
     provider: _.trim(req.body.provider),
     password: req.body.password,
-    name: _.trim(req.body.name)
+    name: _.trim(req.body.name).replace(reservedCharForUsername, ' ')
   }
 
   if (!validator.isEmail(nUsr.email)) {
-    return res.status(400).json({ msg: 'Invalid email address' })
-  } else if (!validator.isIn(nUsr.provider, ['local', 'google', 'windowslive', 'facebook', 'github', 'slack'])) {
-    return res.status(400).json({ msg: 'Invalid provider' })
+    return res.status(200).json({ msg: 'Invalid email address' })
+  } else if (!validator.isIn(nUsr.provider, ['local'])) {
+    return res.status(200).json({ msg: 'Invalid provider' })
   } else if (nUsr.provider === 'local' && !validator.isLength(nUsr.password, { min: 6 })) {
-    return res.status(400).json({ msg: 'Password too short or missing' })
+    return res.status(200).json({ msg: 'Password too short or missing' })
   } else if (nUsr.provider === 'local' && !validator.isLength(nUsr.name, { min: 2 })) {
-    return res.status(400).json({ msg: 'Name is missing' })
+    return res.status(200).json({ msg: 'Name is missing' })
+  } else if (reservedUsernameList.includes(nUsr.name)) {
+    return res.status(200).json({ msg: 'Reserved name not allowed' })
   }
 
   db.User.findOne({ email: nUsr.email, provider: nUsr.provider }).then(exUsr => {
     if (exUsr) {
-      return res.status(400).json({ msg: 'User already exists!' }) || true
+      return res.status(200).json({ msg: 'User already exists!' }) || true
     }
 
     let pwdGen = (nUsr.provider === 'local') ? db.User.hashPassword(nUsr.password) : Promise.resolve(true)
@@ -184,7 +193,13 @@ router.post('/users/:id', (req, res) => {
   }
 
   return db.User.findById(req.params.id).then((usr) => {
-    usr.name = _.trim(req.body.name)
+    // handle submitted name
+    if (reservedUsernameList.includes(req.body.name.toLowerCase())) {
+      return Promise.reject(new Error('Reserved name not allowed'))
+    } else {
+      usr.name = _.trim(req.body.name).replace(reservedCharForUsername, '')
+    }
+
     usr.rights = JSON.parse(req.body.rights)
     if (usr.provider === 'local' && req.body.password !== '********') {
       let nPwd = _.trim(req.body.password)
@@ -206,9 +221,9 @@ router.post('/users/:id', (req, res) => {
     }
     return usr
   }).then(() => {
-    return res.json({ msg: 'OK' })
+    return res.json({ ok: true })
   }).catch((err) => {
-    res.status(400).json({ msg: err.message })
+    return res.status(200).json({ msg: err.message })
   })
 })
 
@@ -298,7 +313,7 @@ router.post('/theme', (req, res) => {
   appconfig.theme.code.dark = req.body.codedark === 'true'
   appconfig.theme.code.colorize = req.body.codecolorize === 'true'
 
-  return res.json({ msg: 'OK' })
+  return res.json({ ok: true })
 })
 
 module.exports = router

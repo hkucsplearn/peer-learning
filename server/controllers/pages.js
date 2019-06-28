@@ -366,6 +366,7 @@ router.get('/*', (req, res, next) => {
       message: err.message,
       error: {}
     })
+    return true
   })
 })
 
