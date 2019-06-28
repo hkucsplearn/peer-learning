@@ -11,6 +11,11 @@ const ExpressBruteMongooseStore = require('express-brute-mongoose')
 const moment = require('moment')
 const url = require('url')
 const dns = require('dns')
+const mongoose = require('mongoose')
+const uuidv1 = require('uuid/v1')
+const bcrypt = require('bcryptjs-then')
+
+const ObjectId = mongoose.Types.ObjectId
 
 /**
  * Setup Express-Brute
@@ -42,8 +47,6 @@ router.get('/login', function (req, res, next) {
 })
 
 router.post('/login/:token', bruteforce.prevent, (req, res, next) => {
-  const authToken = req.params.token
-
   new Promise((resolve, reject) => {
     // [3] HKU AUTHENTICATION
     passport.authenticate('hku', (err, user, info) => {
@@ -127,53 +130,83 @@ router.post('/login', bruteforce.prevent, function (req, res, next) {
 })
 
 router.post('/redirect-to-hkucas', (req, res, next) => {
-  res.redirect(303, url.format(
-    {
-      pathname: 'https://i.cs.hku.hk/~plearn/',
-      query: {
-        's': 1,
-        't': 2
-      }
-    }
-  ))
+  // expire in 5 mins
+  const expiryDate = new Date(new Date().getTime() + 5 * 60 * 1000)
+
+  const authToken = new db.AuthToken({
+    _id: new ObjectId(),
+    token: uuidv1(),
+    expiryDate,
+    isAuthenticated: false
+  })
+
+  authToken.save().then((result) => {
+    return result.token
+  }).then(token => {
+    let secret = token + appconfig.sessionSecret
+    bcrypt.hash(secret).then((hash) => {
+      return res.json({
+        't': token,
+        's': hash
+      })
+      // res.redirect(303, url.format(
+      //   {
+      //     pathname: 'https://i.cs.hku.hk/~plearn/',
+      //     query: {
+      //       't': token,
+      //       's': hash
+      //     }
+      //   }
+      // ))
+    })
+  }).catch(err => {
+    console.error(err)
+    req.flash('alert', {
+      title: lang.t('auth:errors.loginerror'),
+      message: 'Something goes wrong, try again later.'
+    })
+  })
 })
 
-router.post('/hku-login-result', (req, res, next) => {
-  dns.lookup('i.cs.hku.hk', (err, addresses, family) => {
+router.post('/activate-auth-token', (req, res, next) => {
+  dns.lookup('localhost', (err, addresses, family) => {
     if (err) {
       console.error(err.message)
     }
     const clientIPAdress = req.connection.remoteAddress
 
     if (clientIPAdress !== addresses) {
-      return res.status(401).json({success: false, message: '401 Unauthorized'})
+      return res.status(401).json({success: false})
     }
 
-    return res.status(200).json({success: true, message: 'OK'})
+    if (!req.body.t || !req.body.s) {
+      return res.status(400).json({success: false, message: 'missing t or s'})
+    }
+
+    const t = req.body.t
+    const s = req.body.s
+    let secret = t + appconfig.sessionSecret
+
+    bcrypt.compare(secret, s).then((valid) => {
+      if (!valid) {
+        return res.status(401).json({success: false, message: 'wrong secret'})
+      }
+
+      return db.AuthToken.findOne({ token: t }).then(authToken => {
+        if (new Date() > authToken.expiryDate) {
+          return res.status(401).json({success: false, message: 'expired token'})
+        }
+
+        authToken.isAuthenticated = true
+        return authToken.save()
+          .then(() => res.status(200).json({success: true, message: 'OK'}))
+      })
+    }).catch(err => {
+      console.error(err)
+      return res.status(500).json({success: false, message: err.message})
+    })
   })
 })
-
-/**
- * Social Login
- */
-
-// router.get('/login/ms', passport.authenticate('windowslive', { scope: ['wl.signin', 'wl.basic', 'wl.emails'] }))
-// router.get('/login/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
-// router.get('/login/facebook', passport.authenticate('facebook', { scope: ['public_profile', 'email'] }))
-// router.get('/login/github', passport.authenticate('github', { scope: ['user:email'] }))
-// router.get('/login/slack', passport.authenticate('slack', { scope: ['identity.basic', 'identity.email'] }))
-// router.get('/login/azure', passport.authenticate('azure_ad_oauth2'))
-// router.get('/login/oauth2', passport.authenticate('oauth2'))
-// router.get('/login/oidc', passport.authenticate('oidc'))
-
-// router.get('/login/ms/callback', passport.authenticate('windowslive', { failureRedirect: '/login', successRedirect: '/' }))
-// router.get('/login/google/callback', passport.authenticate('google', { failureRedirect: '/login', successRedirect: '/' }))
-// router.get('/login/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login', successRedirect: '/' }))
-// router.get('/login/github/callback', passport.authenticate('github', { failureRedirect: '/login', successRedirect: '/' }))
-// router.get('/login/slack/callback', passport.authenticate('slack', { failureRedirect: '/login', successRedirect: '/' }))
-// router.get('/login/azure/callback', passport.authenticate('azure_ad_oauth2', { failureRedirect: '/login', successRedirect: '/' }))
-// router.get('/login/oauth2/callback', passport.authenticate('oauth2', { failureRedirect: '/login', successRedirect: '/' }))
-// router.get('/login/oidc/callback', passport.authenticate('oidc', { failureRedirect: '/login', successRedirect: '/' }))
 
 /**
  * Logout

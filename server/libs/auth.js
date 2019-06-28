@@ -52,12 +52,11 @@ module.exports = function (passport) {
       ))
   }
 
-  // HKU Account
-  // *** no authentication process is done here. ***
-  // *** This CustomStrategy is used after HKU portal authentication is done and successfull! ***
+  // HKU Account (check if the authToken valid)
   if (appconfig.auth.hku && appconfig.auth.hku.enabled) {
     passport.use('hku',
       new CustomStrategy((req, done) => {
+        const authToken = req.params.token
         const hkuEmail = req.body.uid + '@hku.hk'
         const provider = 'hku'
         db.User.findOne({ email: hkuEmail, provider }).then((user) => {
@@ -68,7 +67,7 @@ module.exports = function (passport) {
             let nUsr = {
               email: hkuEmail,
               provider,
-              name: 'CS Learner',
+              name: 'Peer Learner',
               rights: [{
                 role: 'write',
                 path: '/',
