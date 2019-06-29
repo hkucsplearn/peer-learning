@@ -179,8 +179,8 @@ router.get('/portal-login/:token', bruteforce.prevent, (req, res, next) => {
 
   // HKU AUTHENTICATION
   passport.authenticate('hku', (err, user, info) => {
-    if (err) { return res.status(500).send('login fail') }
-    if (!user) { return res.status(401).send('invalid login') }
+    if (err) { return res.status(500).send(err.message) }
+    if (!user) { return res.status(401).send('user not exists') }
     return res.redirect(req.session.redirectTo || '/')
   })(req, res, next)
 })
