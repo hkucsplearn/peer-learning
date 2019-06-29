@@ -126,7 +126,7 @@ router.post('/portal-login/activate/:token', (req, res, next) => {
     if (err) {
       console.error(err.message)
     }
-    const clientIPAdress = req.connection.remoteAddress
+    const clientIPAdress = req.headers['x-forwarded-for']
 
     if (clientIPAdress !== addresses) {
       return res.status(401).json({success: false})
