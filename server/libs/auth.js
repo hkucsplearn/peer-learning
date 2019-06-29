@@ -9,19 +9,18 @@ module.exports = function (passport) {
   // Serialization user methods
 
   passport.serializeUser(function (user, done) {
-    done(null, user._id)
+    return done(null, user._id)
   })
 
   passport.deserializeUser(function (id, done) {
-    db.User.findById(id).then((user) => {
+    return db.User.findById(id, (user) => {
       if (user) {
-        done(null, user)
+        return done(null, user)
       } else {
-        done(new Error(lang.t('auth:errors:usernotfound')), null)
+        return done(new Error(lang.t('auth:errors:usernotfound')), null)
       }
-      return true
     }).catch((err) => {
-      done(err, null)
+      return done(err, null)
     })
   })
 
@@ -32,7 +31,7 @@ module.exports = function (passport) {
         usernameField: 'email',
         passwordField: 'password'
       }, (uEmail, uPassword, done) => {
-        db.User.findOne({ email: uEmail, provider: 'local' }).then((user) => {
+        return db.User.findOne({ email: uEmail, provider: 'local' }).then((user) => {
           if (user) {
             return user.validatePassword(uPassword).then(() => {
               return done(null, user) || true
@@ -41,7 +40,7 @@ module.exports = function (passport) {
             return done(new Error('INVALID_LOGIN'), null)
           }
         }).catch((err) => {
-          done(err, null)
+          return done(err, null)
         })
       })
     )
@@ -58,12 +57,12 @@ module.exports = function (passport) {
         (authToken, s, done) => {
           let secret = authToken + appconfig.sessionSecret
 
-          bcrypt.compare(secret, s).then((valid) => {
+          return bcrypt.compare(secret, s).then((valid) => {
             if (!valid) {
               return done(new Error('wrong secret'), null)
             }
 
-            db.AuthToken.findOne({ token: authToken }).then(authToken => {
+            return db.AuthToken.findOne({ token: authToken }).then(authToken => {
               if (!authToken || new Date() > authToken.expiryDate) {
                 return done(new Error('invalid or expired token'), null)
               }
@@ -76,7 +75,7 @@ module.exports = function (passport) {
 
               const hkuEmail = authToken.uid + '@hku.hk'
               const provider = 'hku'
-              db.User.findOne({ email: hkuEmail, provider }).then((user) => {
+              return db.User.findOne({ email: hkuEmail, provider }).then((user) => {
                 if (user) {
                   return done(null, user) || true
                 } else {
@@ -92,8 +91,8 @@ module.exports = function (passport) {
                       deny: false
                     }]
                   }
-                  db.User.create(nUsr).then((createdUser) => {
-                    authToken.remove().then(() => {
+                  return db.User.create(nUsr).then((createdUser) => {
+                    return authToken.remove().then(() => {
                       return done(null, createdUser) || true
                     })
                   })
@@ -102,7 +101,7 @@ module.exports = function (passport) {
             })
           }).catch(err => {
             if (err) console.error(err)
-            done(new Error(err.message), null)
+            return done(new Error(err.message), null)
           })
         }
       )
