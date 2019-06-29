@@ -13,7 +13,7 @@ const url = require('url')
 const dns = require('dns')
 const mongoose = require('mongoose')
 const uuidv1 = require('uuid/v1')
-const bcrypt = require('bcryptjs-then')
+const crypto = require('crypto')
 
 const ObjectId = mongoose.Types.ObjectId
 
@@ -97,18 +97,14 @@ router.get('/portal-login/redirect', (req, res, next) => {
   authToken.save().then((result) => {
     return result.token
   }).then(token => {
-    const secret = token + appconfig.sessionSecret
-    bcrypt.hash(secret).then((hash) => {
-      res.redirect(303, url.format(
-        {
-          pathname: 'https://i.cs.hku.hk/~plearn/',
-          query: {
-            't': token,
-            's': hash
-          }
+    res.redirect(303, url.format(
+      {
+        pathname: 'https://i.cs.hku.hk/~plearn/',
+        query: {
+          't': token
         }
-      ))
-    })
+      }
+    ))
   }).catch(err => {
     console.error(err)
     req.flash('alert', {
@@ -129,37 +125,39 @@ router.post('/portal-login/activate/:token', (req, res, next) => {
     const clientIPAdress = req.headers['x-forwarded-for']
 
     if (clientIPAdress !== addresses) {
-      return res.status(401).json({success: false})
+      return res.status(401).send('unauthorized access')
     }
 
     if (!req.body.s || !req.body.uid) {
-      return res.status(400).json({success: false, message: 'bad request'})
+      return res.status(400).send('bad request')
     }
 
     const authToken = req.params.token
     const s = req.body.s
     const uid = req.body.uid
-    let secret = authToken + appconfig.sessionSecret
+    const secret = authToken + appconfig.authAgentSecret
 
-    bcrypt.compare(secret, s).then((valid) => {
-      if (!valid) {
-        return res.status(401).json({success: false, message: 'wrong secret'})
+    const correctS = crypto.createHash('sha256').update(secret).digest('hex')
+
+    if (s !== correctS) {
+      return res.status(401).send('wrong secret')
+    }
+
+    return db.AuthToken.findOne({ token: authToken }).then(authToken => {
+      if (!authToken || new Date() > authToken.expiryDate) {
+        return res.status(401).send('invalid or expired token')
       }
 
-      return db.AuthToken.findOne({ token: authToken }).then(authToken => {
-        if (!authToken || new Date() > authToken.expiryDate) {
-          return res.status(401).json({success: false, message: 'invalid or expired token'})
-        }
+      authToken.isAuthenticated = true
+      authToken.uid = uid
+      const s2 = crypto.createHash('sha256').update(secret + appconfig.sessionSecret).digest('hex').toString()
 
-        authToken.isAuthenticated = true
-        authToken.uid = uid
-        return authToken.save()
-          .then(() => res.status(200).json({success: true, message: 'OK'}))
-      })
-    }).catch(err => {
-      console.error(err)
-      return res.status(500).json({success: false, message: err.message})
+      return authToken.save()
+        .then(() => res.status(200).send(s2))
     })
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({success: false, message: err.message})
   })
 })
 

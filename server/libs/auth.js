@@ -3,7 +3,7 @@
 /* global appconfig, appdata, db, lang, winston */
 
 const LocalStrategy = require('passport-local').Strategy
-const bcrypt = require('bcryptjs-then')
+const crypto = require('crypto')
 
 module.exports = function (passport) {
   // Serialization user methods
@@ -56,49 +56,47 @@ module.exports = function (passport) {
           passwordField: 's'
         },
         (authToken, s, done) => {
-          let secret = authToken + appconfig.sessionSecret
+          const secret = authToken + appconfig.sessionSecret + appconfig.authAgentSecret
+          const correctS = crypto.createHash('sha256').update(secret).digest('hex').toString()
 
-          bcrypt.compare(secret, s).then((valid) => {
-            if (!valid) {
-              return done(new Error('wrong secret'), null)
+          if (s !== correctS) {
+            return done(new Error('wrong secret'), null)
+          }
+
+          return db.AuthToken.findOne({ token: authToken }).then(authToken => {
+            if (!authToken || new Date() > authToken.expiryDate) {
+              return done(new Error('invalid or expired token'), null)
             }
 
-            return db.AuthToken.findOne({ token: authToken }).then(authToken => {
-              if (!authToken || new Date() > authToken.expiryDate) {
-                return done(new Error('invalid or expired token'), null)
-              }
+            if (!authToken.isAuthenticated) {
+              return done(new Error('invalid login'), null)
+            }
 
-              if (!authToken.isAuthenticated) {
-                return done(new Error('invalid login'), null)
-              }
-
-              // proceed to login
-
-              const hkuEmail = authToken.uid + '@hku.hk'
-              const provider = 'hku'
-              return db.User.findOne({ email: hkuEmail, provider }).then((user) => {
-                if (user) {
-                  return done(null, user) || true
-                } else {
-                // first time login, create user in DB
-                  let nUsr = {
-                    email: hkuEmail,
-                    provider,
-                    name: 'Peer Learner',
-                    rights: [{
-                      role: 'write',
-                      path: '/',
-                      exact: false,
-                      deny: false
-                    }]
-                  }
-                  return db.User.create(nUsr).then((createdUser) => {
-                    return authToken.remove().then(() => {
-                      return done(null, createdUser) || true
-                    })
-                  })
+            // proceed to login
+            const hkuEmail = authToken.uid + '@hku.hk'
+            const provider = 'hku'
+            return db.User.findOne({ email: hkuEmail, provider }).then((user) => {
+              if (user) {
+                return done(null, user) || true
+              } else {
+              // first time login, create user in DB
+                let nUsr = {
+                  email: hkuEmail,
+                  provider,
+                  name: 'Peer Learner',
+                  rights: [{
+                    role: 'write',
+                    path: '/',
+                    exact: false,
+                    deny: false
+                  }]
                 }
-              })
+                return db.User.create(nUsr).then((createdUser) => {
+                  return authToken.remove().then(() => {
+                    return done(null, createdUser) || true
+                  })
+                })
+              }
             })
           }).catch(err => {
             if (err) console.error(err)
