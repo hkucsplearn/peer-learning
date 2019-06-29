@@ -119,8 +119,8 @@ router.get('/portal-login/redirect', (req, res, next) => {
 })
 
 router.post('/portal-login/activate/:token', (req, res, next) => {
-  // const loginAgentHostname = 'i.cs.hku.hk'
-  const loginAgentHostname = 'localhost'
+  const loginAgentHostname = 'i.cs.hku.hk'
+  // const loginAgentHostname = 'localhost'
 
   dns.lookup(loginAgentHostname, (err, addresses, family) => {
     if (err) {
