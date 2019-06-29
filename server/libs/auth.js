@@ -9,18 +9,19 @@ module.exports = function (passport) {
   // Serialization user methods
 
   passport.serializeUser(function (user, done) {
-    return done(null, user._id)
+    done(null, user._id)
   })
 
   passport.deserializeUser(function (id, done) {
-    return db.User.findById(id, (user) => {
+    db.User.findById(id).then((user) => {
       if (user) {
-        return done(null, user)
+        done(null, user)
       } else {
-        return done(new Error(lang.t('auth:errors:usernotfound')), null)
+        done(new Error(lang.t('auth:errors:usernotfound')), null)
       }
+      return true
     }).catch((err) => {
-      return done(err, null)
+      done(err, null)
     })
   })
 
@@ -31,7 +32,7 @@ module.exports = function (passport) {
         usernameField: 'email',
         passwordField: 'password'
       }, (uEmail, uPassword, done) => {
-        return db.User.findOne({ email: uEmail, provider: 'local' }).then((user) => {
+        db.User.findOne({ email: uEmail, provider: 'local' }).then((user) => {
           if (user) {
             return user.validatePassword(uPassword).then(() => {
               return done(null, user) || true
@@ -40,7 +41,7 @@ module.exports = function (passport) {
             return done(new Error('INVALID_LOGIN'), null)
           }
         }).catch((err) => {
-          return done(err, null)
+          done(err, null)
         })
       })
     )
@@ -57,7 +58,7 @@ module.exports = function (passport) {
         (authToken, s, done) => {
           let secret = authToken + appconfig.sessionSecret
 
-          return bcrypt.compare(secret, s).then((valid) => {
+          bcrypt.compare(secret, s).then((valid) => {
             if (!valid) {
               return done(new Error('wrong secret'), null)
             }
@@ -101,7 +102,7 @@ module.exports = function (passport) {
             })
           }).catch(err => {
             if (err) console.error(err)
-            return done(new Error(err.message), null)
+            done(new Error(err.message), null)
           })
         }
       )
