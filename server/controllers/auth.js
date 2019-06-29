@@ -163,7 +163,7 @@ router.post('/portal-login/activate/:token', (req, res, next) => {
   })
 })
 
-router.get('/portal-login/:token', bruteforce.prevent, (req, res, next) => {
+router.get('/portal-login/:token', (req, res, next) => {
   if (!req.params.token || !req.query.s) {
     return res.status(400).json({success: false, message: 'bad request'})
   }
@@ -177,9 +177,12 @@ router.get('/portal-login/:token', bruteforce.prevent, (req, res, next) => {
 
   // HKU AUTHENTICATION
   passport.authenticate('hku', (err, user, info) => {
-    if (err) { return res.status(500).send(err.message) }
+    if (err) { return res.status(401).send(err.message) }
     if (!user) { return res.status(401).send('user not exists') }
-    return res.redirect(req.session.redirectTo || '/')
+    req.logIn(user, (err) => {
+      if (err) { return next(err) }
+      return res.redirect(req.session.redirectTo || '/')
+    })
   })(req, res, next)
 })
 
