@@ -44,7 +44,7 @@ export default {
           })
         }
       }).catch(err => {
-        console.log(err)
+        console.error(err)
         self.$store.dispatch('alert', {
           style: 'red',
           icon: 'square-cross',

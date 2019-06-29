@@ -22,7 +22,7 @@ const ObjectId = mongoose.Types.ObjectId
  */
 const EBstore = new ExpressBruteMongooseStore(db.Bruteforce)
 const bruteforce = new ExpressBrute(EBstore, {
-  freeRetries: 5,
+  freeRetries: 50,
   minWait: 60 * 1000,
   maxWait: 5 * 60 * 1000,
   refreshTimeoutOnRequest: false,
@@ -40,69 +40,20 @@ const bruteforce = new ExpressBrute(EBstore, {
 /**
  * Login form
  */
-router.get('/login', function (req, res, next) {
+router.get('/login', (req, res, next) => {
   res.render('auth/login', {
     usr: res.locals.usr
   })
 })
 
-router.post('/login/:token', bruteforce.prevent, (req, res, next) => {
-  new Promise((resolve, reject) => {
-    // [3] HKU AUTHENTICATION
-    passport.authenticate('hku', (err, user, info) => {
-      if (err) { return reject(err) }
-      if (info && info.message) { return reject(new Error(info.message)) }
-      if (!user) { return reject(new Error('INVALID_LOGIN')) }
-      resolve(user)
-    })(req, res, next)
-  }).then((user) => {
-    // LOGIN SUCCESS
-    return req.logIn(user, (err) => {
-      if (err) { return next(err) }
-      req.brute.reset(() => {
-        return res.redirect(req.session.redirectTo || '/')
-      })
-    }) || true
-  }).catch(err => {
-    // LOGIN FAIL
-    if (err.message === 'INVALID_LOGIN') {
-      req.flash('alert', {
-        title: lang.t('auth:errors.invalidlogin'),
-        message: lang.t('auth:errors.invalidloginmsg')
-      })
-      return res.redirect('/login')
-    } else {
-      req.flash('alert', {
-        title: lang.t('auth:errors.loginerror'),
-        message: err.message
-      })
-      return res.redirect('/login')
-    }
-  })
-})
-
 router.post('/login', bruteforce.prevent, function (req, res, next) {
   new Promise((resolve, reject) => {
-    // [1] LOCAL AUTHENTICATION
+    // LOCAL AUTHENTICATION
     passport.authenticate('local', function (err, user, info) {
       if (err) { return reject(err) }
       if (!user) { return reject(new Error('INVALID_LOGIN')) }
       resolve(user)
     })(req, res, next)
-  }).catch({ message: 'INVALID_LOGIN' }, err => {
-    if (appconfig.auth.ldap && appconfig.auth.ldap.enabled) {
-      // [2] LDAP AUTHENTICATION
-      return new Promise((resolve, reject) => {
-        passport.authenticate('ldapauth', function (err, user, info) {
-          if (err) { return reject(err) }
-          if (info && info.message) { return reject(new Error(info.message)) }
-          if (!user) { return reject(new Error('INVALID_LOGIN')) }
-          resolve(user)
-        })(req, res, next)
-      })
-    } else {
-      throw err
-    }
   }).then((user) => {
     // LOGIN SUCCESS
     return req.logIn(user, (err) => {
@@ -129,7 +80,10 @@ router.post('/login', bruteforce.prevent, function (req, res, next) {
   })
 })
 
-router.post('/redirect-to-hkucas', (req, res, next) => {
+/**
+ * HKU Portal Login
+ */
+router.get('/portal-login/redirect', (req, res, next) => {
   // expire in 5 mins
   const expiryDate = new Date(new Date().getTime() + 5 * 60 * 1000)
 
@@ -143,21 +97,17 @@ router.post('/redirect-to-hkucas', (req, res, next) => {
   authToken.save().then((result) => {
     return result.token
   }).then(token => {
-    let secret = token + appconfig.sessionSecret
+    const secret = token + appconfig.sessionSecret
     bcrypt.hash(secret).then((hash) => {
-      return res.json({
-        't': token,
-        's': hash
-      })
-      // res.redirect(303, url.format(
-      //   {
-      //     pathname: 'https://i.cs.hku.hk/~plearn/',
-      //     query: {
-      //       't': token,
-      //       's': hash
-      //     }
-      //   }
-      // ))
+      res.redirect(303, url.format(
+        {
+          pathname: 'https://i.cs.hku.hk/~plearn/',
+          query: {
+            't': token,
+            's': hash
+          }
+        }
+      ))
     })
   }).catch(err => {
     console.error(err)
@@ -168,8 +118,11 @@ router.post('/redirect-to-hkucas', (req, res, next) => {
   })
 })
 
-router.post('/activate-auth-token', (req, res, next) => {
-  dns.lookup('localhost', (err, addresses, family) => {
+router.post('/portal-login/activate/:token', (req, res, next) => {
+  // const loginAgentHostname = 'i.cs.hku.hk'
+  const loginAgentHostname = 'localhost'
+
+  dns.lookup(loginAgentHostname, (err, addresses, family) => {
     if (err) {
       console.error(err.message)
     }
@@ -179,25 +132,27 @@ router.post('/activate-auth-token', (req, res, next) => {
       return res.status(401).json({success: false})
     }
 
-    if (!req.body.t || !req.body.s) {
-      return res.status(400).json({success: false, message: 'missing t or s'})
+    if (!req.body.s || !req.body.uid) {
+      return res.status(400).json({success: false, message: 'bad request'})
     }
 
-    const t = req.body.t
+    const authToken = req.params.token
     const s = req.body.s
-    let secret = t + appconfig.sessionSecret
+    const uid = req.body.uid
+    let secret = authToken + appconfig.sessionSecret
 
     bcrypt.compare(secret, s).then((valid) => {
       if (!valid) {
         return res.status(401).json({success: false, message: 'wrong secret'})
       }
 
-      return db.AuthToken.findOne({ token: t }).then(authToken => {
-        if (new Date() > authToken.expiryDate) {
-          return res.status(401).json({success: false, message: 'expired token'})
+      return db.AuthToken.findOne({ token: authToken }).then(authToken => {
+        if (!authToken || new Date() > authToken.expiryDate) {
+          return res.status(401).json({success: false, message: 'invalid or expired token'})
         }
 
         authToken.isAuthenticated = true
+        authToken.uid = uid
         return authToken.save()
           .then(() => res.status(200).json({success: true, message: 'OK'}))
       })
@@ -208,10 +163,32 @@ router.post('/activate-auth-token', (req, res, next) => {
   })
 })
 
+router.get('/portal-login/:token', bruteforce.prevent, (req, res, next) => {
+  if (!req.params.token || !req.query.s) {
+    return res.status(400).json({success: false, message: 'bad request'})
+  }
+  console.log('req.params', req.params)
+  console.log('req.query', req.query)
+
+  let fakeQuery = {
+    token: req.params.token,
+    s: req.query.s
+  }
+
+  req.query = fakeQuery // for using passport local strategy
+
+  // HKU AUTHENTICATION
+  passport.authenticate('hku', (err, user, info) => {
+    if (err) { return res.status(500).send('login fail') }
+    if (!user) { return res.status(401).send('invalid login') }
+    return res.redirect(req.session.redirectTo || '/')
+  })(req, res, next)
+})
+
 /**
  * Logout
  */
-router.get('/logout', function (req, res) {
+router.get('/logout', (req, res) => {
   req.logout()
   res.redirect('/')
 })

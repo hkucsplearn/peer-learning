@@ -6,7 +6,8 @@ const authToken = new Schema({
   _id: ObjectId,
   token: { type: String, unique: true, required: true },
   expiryDate: { type: Date, required: true },
-  isAuthenticated: { type: Boolean }
+  isAuthenticated: { type: Boolean },
+  uid: { type: String }
 })
 
 module.exports = mongoose.model('AuthToken', authToken)

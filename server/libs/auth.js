@@ -2,9 +2,8 @@
 
 /* global appconfig, appdata, db, lang, winston */
 
-const fs = require('fs')
-const _ = require('lodash')
-const CustomStrategy = require('passport-custom').Strategy
+const LocalStrategy = require('passport-local').Strategy
+const bcrypt = require('bcryptjs-then')
 
 module.exports = function (passport) {
   // Serialization user methods
@@ -27,9 +26,7 @@ module.exports = function (passport) {
   })
 
   // Local Account
-
   if (appconfig.auth.local && appconfig.auth.local.enabled) {
-    const LocalStrategy = require('passport-local').Strategy
     passport.use('local',
       new LocalStrategy({
         usernameField: 'email',
@@ -39,8 +36,6 @@ module.exports = function (passport) {
           if (user) {
             return user.validatePassword(uPassword).then(() => {
               return done(null, user) || true
-            }).catch((err) => {
-              return done(err, null)
             })
           } else {
             return done(new Error('INVALID_LOGIN'), null)
@@ -48,253 +43,73 @@ module.exports = function (passport) {
         }).catch((err) => {
           done(err, null)
         })
-      }
-      ))
+      })
+    )
   }
 
   // HKU Account (check if the authToken valid)
   if (appconfig.auth.hku && appconfig.auth.hku.enabled) {
     passport.use('hku',
-      new CustomStrategy((req, done) => {
-        const authToken = req.params.token
-        const hkuEmail = req.body.uid + '@hku.hk'
-        const provider = 'hku'
-        db.User.findOne({ email: hkuEmail, provider }).then((user) => {
-          if (user) {
-            return done(null, user) || true
-          } else {
-            // first time login, create user in DB
-            let nUsr = {
-              email: hkuEmail,
-              provider,
-              name: 'Peer Learner',
-              rights: [{
-                role: 'write',
-                path: '/',
-                exact: false,
-                deny: false
-              }]
+      new LocalStrategy(
+        {
+          usernameField: 'token',
+          passwordField: 's'
+        },
+        (authToken, s, done) => {
+          let secret = authToken + appconfig.sessionSecret
+
+          bcrypt.compare(secret, s).then((valid) => {
+            if (!valid) {
+              return done(new Error('wrong secret'), null)
             }
-            return db.User.create(nUsr).then((user) => {
-              return done(null, user) || true
-            }).catch(err => {
-              if (err) console.error(err)
-              return done(new Error(err.message), null)
+
+            db.AuthToken.findOne({ token: authToken }).then(authToken => {
+              if (!authToken || new Date() > authToken.expiryDate) {
+                return done(new Error('invalid or expired token'), null)
+              }
+
+              if (!authToken.isAuthenticated) {
+                return done(new Error('invalid login'), null)
+              }
+
+              // proceed to login
+
+              const hkuEmail = authToken.uid + '@hku.hk'
+              const provider = 'hku'
+              db.User.findOne({ email: hkuEmail, provider }).then((user) => {
+                if (user) {
+                  return done(null, user) || true
+                } else {
+                // first time login, create user in DB
+                  let nUsr = {
+                    email: hkuEmail,
+                    provider,
+                    name: 'Peer Learner',
+                    rights: [{
+                      role: 'write',
+                      path: '/',
+                      exact: false,
+                      deny: false
+                    }]
+                  }
+                  db.User.create(nUsr).then((createdUser) => {
+                    authToken.remove().then(() => {
+                      return done(null, createdUser) || true
+                    })
+                  })
+                }
+              })
             })
-          }
-        }).catch(err => {
-          if (err) console.error(err)
-          return done(new Error(err.message), null)
-        })
-      })
+          }).catch(err => {
+            if (err) console.error(err)
+            done(new Error(err.message), null)
+          })
+        }
+      )
     )
   }
 
-  // Google ID
-
-  if (appconfig.auth.google && appconfig.auth.google.enabled) {
-    const GoogleStrategy = require('@passport-next/passport-google-oauth2').Strategy
-    passport.use('google',
-      new GoogleStrategy({
-        clientID: appconfig.auth.google.clientId,
-        clientSecret: appconfig.auth.google.clientSecret,
-        callbackURL: appconfig.host + '/login/google/callback'
-      }, (accessToken, refreshToken, profile, cb) => {
-        db.User.processProfile(profile).then((user) => {
-          return cb(null, user) || true
-        }).catch((err) => {
-          return cb(err, null) || true
-        })
-      }
-      ))
-  }
-
-  // Microsoft Accounts
-
-  if (appconfig.auth.microsoft && appconfig.auth.microsoft.enabled) {
-    const WindowsLiveStrategy = require('passport-windowslive').Strategy
-    passport.use('windowslive',
-      new WindowsLiveStrategy({
-        clientID: appconfig.auth.microsoft.clientId,
-        clientSecret: appconfig.auth.microsoft.clientSecret,
-        callbackURL: appconfig.host + '/login/ms/callback'
-      }, function (accessToken, refreshToken, profile, cb) {
-        db.User.processProfile(profile).then((user) => {
-          return cb(null, user) || true
-        }).catch((err) => {
-          return cb(err, null) || true
-        })
-      }
-      ))
-  }
-
-  // Facebook
-
-  if (appconfig.auth.facebook && appconfig.auth.facebook.enabled) {
-    const FacebookStrategy = require('passport-facebook').Strategy
-    passport.use('facebook',
-      new FacebookStrategy({
-        clientID: appconfig.auth.facebook.clientId,
-        clientSecret: appconfig.auth.facebook.clientSecret,
-        callbackURL: appconfig.host + '/login/facebook/callback',
-        profileFields: ['id', 'displayName', 'email']
-      }, function (accessToken, refreshToken, profile, cb) {
-        db.User.processProfile(profile).then((user) => {
-          return cb(null, user) || true
-        }).catch((err) => {
-          return cb(err, null) || true
-        })
-      }
-      ))
-  }
-
-  // GitHub
-
-  if (appconfig.auth.github && appconfig.auth.github.enabled) {
-    const GitHubStrategy = require('passport-github2').Strategy
-    passport.use('github',
-      new GitHubStrategy({
-        clientID: appconfig.auth.github.clientId,
-        clientSecret: appconfig.auth.github.clientSecret,
-        callbackURL: appconfig.host + '/login/github/callback',
-        scope: ['user:email']
-      }, (accessToken, refreshToken, profile, cb) => {
-        db.User.processProfile(profile).then((user) => {
-          return cb(null, user) || true
-        }).catch((err) => {
-          return cb(err, null) || true
-        })
-      }
-      ))
-  }
-
-  // Slack
-
-  if (appconfig.auth.slack && appconfig.auth.slack.enabled) {
-    const SlackStrategy = require('passport-slack').Strategy
-    passport.use('slack',
-      new SlackStrategy({
-        clientID: appconfig.auth.slack.clientId,
-        clientSecret: appconfig.auth.slack.clientSecret,
-        callbackURL: appconfig.host + '/login/slack/callback'
-      }, (accessToken, refreshToken, profile, cb) => {
-        db.User.processProfile(profile).then((user) => {
-          return cb(null, user) || true
-        }).catch((err) => {
-          return cb(err, null) || true
-        })
-      }
-      ))
-  }
-
-  // LDAP
-
-  if (appconfig.auth.ldap && appconfig.auth.ldap.enabled) {
-    const LdapStrategy = require('passport-ldapauth').Strategy
-    passport.use('ldapauth',
-      new LdapStrategy({
-        server: {
-          url: appconfig.auth.ldap.url,
-          bindDn: appconfig.auth.ldap.bindDn,
-          bindCredentials: appconfig.auth.ldap.bindCredentials,
-          searchBase: appconfig.auth.ldap.searchBase,
-          searchFilter: appconfig.auth.ldap.searchFilter,
-          searchAttributes: ['displayName', 'name', 'cn', 'mail'],
-          tlsOptions: (appconfig.auth.ldap.tlsEnabled) ? {
-            ca: [
-              fs.readFileSync(appconfig.auth.ldap.tlsCertPath)
-            ]
-          } : {}
-        },
-        usernameField: 'email',
-        passReqToCallback: false
-      }, (profile, cb) => {
-        profile.provider = 'ldap'
-        profile.id = profile.dn
-        db.User.processProfile(profile).then((user) => {
-          return cb(null, user) || true
-        }).catch((err) => {
-          return cb(err, null) || true
-        })
-      }
-      ))
-  }
-
-  // AZURE AD
-
-  if (appconfig.auth.azure && appconfig.auth.azure.enabled) {
-    const AzureAdOAuth2Strategy = require('passport-azure-ad-oauth2').Strategy
-    const jwt = require('jsonwebtoken')
-    passport.use('azure_ad_oauth2',
-      new AzureAdOAuth2Strategy({
-        clientID: appconfig.auth.azure.clientId,
-        clientSecret: appconfig.auth.azure.clientSecret,
-        callbackURL: appconfig.host + '/login/azure/callback',
-        resource: appconfig.auth.azure.resource,
-        tenant: appconfig.auth.azure.tenant
-      }, (accessToken, refreshToken, params, profile, cb) => {
-        let waadProfile = jwt.decode(params.id_token)
-        waadProfile.id = waadProfile.oid
-        waadProfile.provider = 'azure'
-        db.User.processProfile(waadProfile).then((user) => {
-          return cb(null, user) || true
-        }).catch((err) => {
-          return cb(err, null) || true
-        })
-      }
-      ))
-  }
-
-  // OAuth 2
-
-  if (appconfig.auth.oauth2 && appconfig.auth.oauth2.enabled) {
-    const OAuth2Strategy = require('passport-oauth2').Strategy
-    passport.use('oauth2',
-      new OAuth2Strategy({
-        authorizationURL: appconfig.auth.oauth2.authorizationURL,
-        tokenURL: appconfig.auth.oauth2.tokenURL,
-        clientID: appconfig.auth.oauth2.clientId,
-        clientSecret: appconfig.auth.oauth2.clientSecret,
-        callbackURL: appconfig.host + '/login/oauth2/callback'
-      }, (accessToken, refreshToken, profile, cb) => {
-        db.User.processProfile(profile).then((user) => {
-          return cb(null, user) || true
-        }).catch((err) => {
-          return cb(err, null) || true
-        })
-      }
-      ))
-  }
-
-  // OpenID Connect
-
-  if (appconfig.auth.oidc && appconfig.auth.oidc.enabled) {
-    const OIDCStrategy = require('passport-openidconnect').Strategy
-    passport.use('oidc', new OIDCStrategy({
-      userInfoURL: appconfig.auth.oidc.userInfoUrl,
-      authorizationURL: appconfig.auth.oidc.authorizationURL,
-      tokenURL: appconfig.auth.oidc.tokenURL,
-      clientID: appconfig.auth.oidc.clientId,
-      clientSecret: appconfig.auth.oidc.clientSecret,
-      issuer: appconfig.auth.oidc.issuer,
-      callbackURL: appconfig.host + '/login/oidc/callback'
-    }, (iss, sub, profile, jwtClaims, accessToken, refreshToken, params, cb) => {
-      db.User.processProfile({
-        id: jwtClaims.sub,
-        provider: 'oidc',
-        email: _.get(jwtClaims, appconfig.auth.oidc.emailClaim),
-        name: _.get(jwtClaims, appconfig.auth.oidc.usernameClaim)
-      }).then((user) => {
-        return cb(null, user) || true
-      }).catch((err) => {
-        return cb(err, null) || true
-      })
-    }
-    ))
-  }
-
-  // Create users for first-time
-
+  // Create users for first-time guest login
   db.onReady.then(() => {
     return db.User.findOne({ provider: 'local', email: 'guest' }).then((c) => {
       if (c < 1) {
@@ -306,7 +121,7 @@ module.exports = function (passport) {
           name: 'Guest',
           password: '',
           rights: [{
-            role: 'write',
+            role: 'read',
             path: '/',
             exact: false,
             deny: !appconfig.public

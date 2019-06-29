@@ -3,6 +3,7 @@
 /* global appdata, appconfig */
 
 const _ = require('lodash')
+const bcrypt = require('bcryptjs-then')
 
 module.exports = {
   sanitizeCommitUser (user) {
