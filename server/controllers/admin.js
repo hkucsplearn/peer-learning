@@ -164,7 +164,7 @@ router.post('/users/create', (req, res) => {
       }
 
       nUsr.rights = [{
-        role: 'read',
+        role: 'write',
         path: '/',
         exact: false,
         deny: false
