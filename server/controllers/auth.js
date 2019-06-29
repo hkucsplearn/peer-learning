@@ -167,8 +167,6 @@ router.get('/portal-login/:token', bruteforce.prevent, (req, res, next) => {
   if (!req.params.token || !req.query.s) {
     return res.status(400).json({success: false, message: 'bad request'})
   }
-  console.log('req.params', req.params)
-  console.log('req.query', req.query)
 
   let fakeQuery = {
     token: req.params.token,
