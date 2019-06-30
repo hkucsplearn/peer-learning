@@ -11,7 +11,7 @@ lang: en
 langRtl: false
 public: true
 sessionSecret: 6c7aabcb688287ff1d97c5829d51199f812f8b84ce4be821bde3d3f4ed45b8f6
-authAgentSecret: 'this_secret_must_be_same_as_hku_portal_login_auth_agent'
+loginAgentSecret: 'this_secret_must_be_same_as_hku_portal_login_auth_agent'
 db: 'mongodb://localhost:27017/peerlearning'
 git:
   url: 'git@github.com:hkucsplearn/peer-learning-article.git'

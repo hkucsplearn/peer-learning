@@ -136,7 +136,7 @@ router.post('/portal-login/activate/:token', (req, res, next) => {
     const authToken = req.params.token
     const s = req.body.s
     const uid = req.body.uid
-    const secret = authToken + appconfig.authAgentSecret
+    const secret = authToken + appconfig.loginAgentSecret
 
     const correctS = crypto.createHash('sha256').update(secret).digest('hex').toString()
 
