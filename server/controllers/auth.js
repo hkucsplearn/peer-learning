@@ -97,7 +97,7 @@ router.get('/portal-login/redirect', (req, res, next) => {
   authToken.save().then((result) => {
     return result.token
   }).then(token => {
-    res.redirect(303, url.format(
+    return res.redirect(303, url.format(
       {
         pathname: 'https://i.cs.hku.hk/~plearn/',
         query: {
@@ -121,8 +121,9 @@ router.post('/portal-login/activate/:token', (req, res, next) => {
   dns.lookup(loginAgentHostname, (err, addresses, family) => {
     if (err) {
       console.error(err.message)
+      return res.status(500).json({success: false, message: err.message})
     }
-    const clientIPAdress = req.headers['x-forwarded-for']
+    const clientIPAdress = req.headers['x-forwarded-for'] || req.connection.remoteAddress
 
     if (clientIPAdress !== addresses) {
       return res.status(401).send('unauthorized access')
@@ -137,7 +138,7 @@ router.post('/portal-login/activate/:token', (req, res, next) => {
     const uid = req.body.uid
     const secret = authToken + appconfig.authAgentSecret
 
-    const correctS = crypto.createHash('sha256').update(secret).digest('hex')
+    const correctS = crypto.createHash('sha256').update(secret).digest('hex').toString()
 
     if (s !== correctS) {
       return res.status(401).send('wrong secret')
@@ -154,10 +155,10 @@ router.post('/portal-login/activate/:token', (req, res, next) => {
 
       return authToken.save()
         .then(() => res.status(200).send(s2))
+    }).catch(err => {
+      console.error(err)
+      return res.status(500).send(err.message)
     })
-  }).catch(err => {
-    console.error(err)
-    return res.status(500).json({success: false, message: err.message})
   })
 })
 

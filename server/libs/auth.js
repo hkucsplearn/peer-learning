@@ -56,7 +56,7 @@ module.exports = function (passport) {
           passwordField: 's'
         },
         (authToken, s, done) => {
-          const secret = authToken + appconfig.sessionSecret + appconfig.authAgentSecret
+          const secret = authToken + appconfig.authAgentSecret + appconfig.sessionSecret
           const correctS = crypto.createHash('sha256').update(secret).digest('hex').toString()
 
           if (s !== correctS) {
