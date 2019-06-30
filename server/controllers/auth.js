@@ -22,7 +22,7 @@ const ObjectId = mongoose.Types.ObjectId
  */
 const EBstore = new ExpressBruteMongooseStore(db.Bruteforce)
 const bruteforce = new ExpressBrute(EBstore, {
-  freeRetries: 50,
+  freeRetries: 10,
   minWait: 60 * 1000,
   maxWait: 5 * 60 * 1000,
   refreshTimeoutOnRequest: false,
