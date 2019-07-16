@@ -84,34 +84,7 @@ router.post('/login', bruteforce.prevent, function (req, res, next) {
  * HKU Portal Login
  */
 router.get('/portal-login/redirect', (req, res, next) => {
-  // expire in 5 mins
-  const expiryDate = new Date(new Date().getTime() + 5 * 60 * 1000)
-
-  const authToken = new db.AuthToken({
-    _id: new ObjectId(),
-    token: uuidv1(),
-    expiryDate,
-    isAuthenticated: false
-  })
-
-  authToken.save().then((result) => {
-    return result.token
-  }).then(token => {
-    return res.redirect(303, url.format(
-      {
-        pathname: 'https://i.cs.hku.hk/~plearn/',
-        query: {
-          't': token
-        }
-      }
-    ))
-  }).catch(err => {
-    console.error(err)
-    req.flash('alert', {
-      title: lang.t('auth:errors.loginerror'),
-      message: 'Something goes wrong, try again later.'
-    })
-  })
+  return res.redirect(303, 'https://i.cs.hku.hk/~plearn/')
 })
 
 router.post('/portal-login/get-login-token/', (req, res, next) => {
