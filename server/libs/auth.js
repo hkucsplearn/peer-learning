@@ -3,7 +3,6 @@
 /* global appconfig, appdata, db, lang, winston */
 
 const LocalStrategy = require('passport-local').Strategy
-const crypto = require('crypto')
 
 module.exports = function (passport) {
   // Serialization user methods
@@ -53,16 +52,9 @@ module.exports = function (passport) {
       new LocalStrategy(
         {
           usernameField: 'token',
-          passwordField: 's'
+          passwordField: 'dummy'
         },
-        (authToken, s, done) => {
-          const secret = authToken + appconfig.loginAgentSecret + appconfig.sessionSecret
-          const correctS = crypto.createHash('sha256').update(secret).digest('hex').toString()
-
-          if (s !== correctS) {
-            return done(new Error('wrong secret'), null)
-          }
-
+        (authToken, dummy, done) => {
           return db.AuthToken.findOne({ token: authToken }).then(authToken => {
             if (!authToken || new Date() > authToken.expiryDate) {
               return done(new Error('invalid or expired token'), null)

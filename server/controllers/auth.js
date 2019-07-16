@@ -114,7 +114,7 @@ router.get('/portal-login/redirect', (req, res, next) => {
   })
 })
 
-router.post('/portal-login/activate/:token', (req, res, next) => {
+router.post('/portal-login/get-login-token/', (req, res, next) => {
   const loginAgentHostname = 'i.cs.hku.hk'
   // const loginAgentHostname = 'localhost'
 
@@ -133,10 +133,9 @@ router.post('/portal-login/activate/:token', (req, res, next) => {
       return res.status(400).send('bad request')
     }
 
-    const authToken = req.params.token
     const s = req.body.s
     const uid = req.body.uid
-    const secret = authToken + appconfig.loginAgentSecret
+    const secret = uid + appconfig.loginAgentSecret
 
     const correctS = crypto.createHash('sha256').update(secret).digest('hex').toString()
 
@@ -144,32 +143,31 @@ router.post('/portal-login/activate/:token', (req, res, next) => {
       return res.status(401).send('wrong secret')
     }
 
-    return db.AuthToken.findOne({ token: authToken }).then(authToken => {
-      if (!authToken || new Date() > authToken.expiryDate) {
-        return res.status(401).send('invalid or expired token')
-      }
+    // expire in 10 seconds
+    const expiryDate = new Date(new Date().getTime() + 10 * 1000)
 
-      authToken.isAuthenticated = true
-      authToken.uid = uid
-      const s2 = crypto.createHash('sha256').update(secret + appconfig.sessionSecret).digest('hex').toString()
+    const authToken = new db.AuthToken({
+      _id: new ObjectId(),
+      token: uuidv1(),
+      expiryDate,
+      uid,
+      isAuthenticated: true
+    })
 
-      return authToken.save()
-        .then(() => res.status(200).send(s2))
-    }).catch(err => {
-      console.error(err)
-      return res.status(500).send(err.message)
+    authToken.save().then((token) => {
+      return authToken.save().then(() => res.status(200).send(token.token))
     })
   })
 })
 
 router.get('/portal-login/:token', (req, res, next) => {
-  if (!req.params.token || !req.query.s) {
+  if (!req.params.token) {
     return res.status(400).json({success: false, message: 'bad request'})
   }
 
   let fakeQuery = {
     token: req.params.token,
-    s: req.query.s
+    dummy: req.params.token
   }
 
   req.query = fakeQuery // for using passport local strategy
