@@ -51,7 +51,7 @@ A local git Repository is used to to store the articles content and change histo
 
 ## Deploy updates to AWS EC2 server
 
-```bash
+```
 ssh -i \path\to\ssh\key ubuntu@peerlearning.cs.hku.hk
 (cd to local repository)
 sudo bash ./deploy/deployUpdates.sh
@@ -63,7 +63,7 @@ The web application itself does not provide HTTPS traffic, thus, Nginx is used a
 
 Install and configure the nginx reverse proxy:
 
-```bash
+```
 sudo apt update
 sudo apt install nginx
 sudo cp -f ./deploy/nginx.conf /etc/nginx/sites-available/default
@@ -74,7 +74,7 @@ sudo systemctl restart nginx
 
 Install certbot to obtain SSL certificate automatically:
 
-```bash
+```
 sudo apt-get install software-properties-common
 sudo apt-get install python-certbot-nginx
 sudo certbot --nginx -d peerlearning.cs.hku.hk

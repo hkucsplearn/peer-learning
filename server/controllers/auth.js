@@ -87,7 +87,7 @@ router.get('/portal-login/redirect', (req, res, next) => {
   return res.redirect(303, 'https://i.cs.hku.hk/~plearn/')
 })
 
-router.post('/portal-login/get-login-token/', (req, res, next) => {
+router.post('/portal-login/get-login-token', (req, res, next) => {
   const loginAgentHostname = 'i.cs.hku.hk'
   // const loginAgentHostname = 'localhost'
 
