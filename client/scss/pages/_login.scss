@@ -55,11 +55,14 @@ a {
 #root {
 	position: fixed;
 	top: 15vh;
-	left: 10vw;
-	z-index: 2;
+  left: 10vw;
+  bottom: 10vh;
+  z-index: 2;
 	color: #FFF;
 	display: flex;
-	flex-direction: column;
+  flex-direction: column;
+  min-height: 60% !important;
+  overflow: hidden;
 
 	h1 {
 		font-size: 4rem;
@@ -175,74 +178,6 @@ a {
 				font-size: 16px;
 			}
 
-			&.ms {
-				background-color: mc('blue','600');
-				border-color: lighten(mc('blue','600'), 10%);
-
-				&:focus {
-					border-color: #FFF;
-				}
-
-				&:hover {
-					background-color: darken(mc('blue','600'), 10%);
-				}
-
-			}
-
-			&.google {
-				background-color: mc('light-blue','600');
-				border-color: lighten(mc('light-blue','600'), 10%);
-
-				&:focus {
-					border-color: #FFF;
-				}
-
-				&:hover {
-					background-color: darken(mc('light-blue','600'), 10%);
-				}
-
-			}
-
-			&.facebook {
-				background-color: mc('indigo','600');
-				border-color: lighten(mc('indigo','600'), 10%);
-
-				&:focus {
-					border-color: #FFF;
-				}
-
-				&:hover {
-					background-color: darken(mc('indigo','600'), 10%);
-				}
-
-			}
-
-      &.github {
-				background-color: mc('blue-grey','700');
-				border-color: lighten(mc('blue-grey','700'), 10%);
-
-				&:focus {
-					border-color: #FFF;
-				}
-
-				&:hover {
-					background-color: darken(mc('blue-grey','700'), 10%);
-				}
-			}
-
-      &.slack {
-				background-color: mc('purple','700');
-				border-color: lighten(mc('purple','700'), 10%);
-
-				&:focus {
-					border-color: #FFF;
-				}
-
-				&:hover {
-					background-color: darken(mc('purple','700'), 10%);
-				}
-			}
-
 		}
 
 	}
@@ -255,7 +190,7 @@ a {
 	justify-content: flex-start;
 	position: absolute;
 	left: 10vw;
-	bottom: 10vh;
+	bottom: 5vh;
 	z-index: 2;
 	color: rgba(255,255,255,0.5);
 	font-weight: bold;
@@ -282,9 +217,20 @@ a {
 .login-page-title {
   display: block;
   margin-bottom: 25px;
-  font-family: 'wiki-js';
-  font-size: 10vw;
+  font-size: 2rem;
   font-weight: bold;
+  padding: 0;
+  color: #FFF;
+  animation: headerIntro 3s ease;
+}
+
+.login-hints {
+  display: block;
+  font-size: 1rem;
+  font-weight: normal;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 15px;
+  animation: headerIntro 3s ease;
 }
 
 @include keyframes(bg) {

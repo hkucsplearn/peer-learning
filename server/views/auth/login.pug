@@ -39,10 +39,20 @@ html(data-logic='login')
           i.icon-warning-outline
           = appflash[0].title
         h4= appflash[0].message
-      h2= 'For HKU Students:'
+      
+      .is-hidden-mobile
+        h2= 'For HKU Students:'
+      .only-show-for-mobile
+        span.login-hints= 'For HKU Students:'
+
       form(method='get', action='/portal-login/redirect')
         button(style={'margin-top': '0px', 'width': '150px'}, type='submit')= 'HKU Portal Login'
-      h2= 'For Non-HKU Users / Admin:'
+
+      .is-hidden-mobile
+        h2= 'For Non-HKU Users / Admin:'
+      .only-show-for-mobile
+        span.login-hints= 'For Non-HKU Users / Admin:'
+
       if appconfig.auth.local.enabled
         form(method='post', action='/login')
           input#login-user(type='text', name='email', placeholder='Email')
