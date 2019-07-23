@@ -16,11 +16,12 @@ const entryHelper = require('../helpers/entry')
  * Edit document in Markdown
  */
 router.get('/edit/*', (req, res, next) => {
-  if (!res.locals.rights.write) {
+  let safePath = entryHelper.parsePath(_.replace(req.path, '/edit', ''))
+
+  if (!res.locals.rights.write ||
+    ((safePath === 'home' || safePath === 'guide') && !res.locals.rights.manage)) {
     return res.render('error-forbidden')
   }
-
-  let safePath = entryHelper.parsePath(_.replace(req.path, '/edit', ''))
 
   entries.fetchOriginal(safePath, {
     parseMarkdown: false,
@@ -45,15 +46,16 @@ router.get('/edit/*', (req, res, next) => {
 })
 
 router.put('/edit/*', (req, res, next) => {
-  if (!res.locals.rights.write) {
+  let safePath = entryHelper.parsePath(_.replace(req.path, '/edit', ''))
+
+  if (!res.locals.rights.write ||
+      ((safePath === 'home' || safePath === 'guide') && !res.locals.rights.manage)) {
     return res.json({
       ok: false,
       msg: lang.t('errors:forbidden'),
       error: lang.t('errors:forbidden')
     })
   }
-
-  let safePath = entryHelper.parsePath(_.replace(req.path, '/edit', ''))
 
   entries.update(safePath, req.body.markdown, req.user).then(() => {
     return res.json({
@@ -411,7 +413,7 @@ router.put('/*', (req, res, next) => {
  * Delete document
  */
 router.delete('/*', (req, res, next) => {
-  if (!res.locals.rights.write) {
+  if (!res.locals.rights.manage) {
     return res.json({
       ok: false,
       msg: lang.t('errors:forbidden')
