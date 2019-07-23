@@ -79,7 +79,7 @@ block content
                   span= `${pageData.lastEdit.authorName}`
 
             .content-options.is-hidden-mobile
-              if rights.write && !(['home', 'guide'].includes(pageData.meta.path))
+              if rights.manage && !(['home', 'guide'].includes(pageData.meta.path))
                 a.button.is-outlined.is-icon-only(@click='$store.dispatch("modalDeletePage/open")')
                   i.nc-icon-outline.ui-1_trash
               if appconfig.theme.viewSource === 'all' || (rights.write && appconfig.theme.viewSource === 'write')

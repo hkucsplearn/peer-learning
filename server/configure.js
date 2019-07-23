@@ -363,39 +363,51 @@ module.exports = (port, spinner) => {
           const homeDst = path.join(ROOTPATH, conf.paths.repo + '/home.md')
           const guideSrc = path.join(ROOTPATH, '/default_pages/guide.md')
           const guideDst = path.join(ROOTPATH, conf.paths.repo + '/guide.md')
+          const guideFolder = path.join(ROOTPATH, conf.paths.repo + '/uploads/guide')
+          const homeFolder = path.join(ROOTPATH, conf.paths.repo + '/uploads/home')
+          const guideUploadInitializer = path.join(ROOTPATH, conf.paths.repo + '/uploads/guide/initializeFolder.md')
+          const homeUploadInitializer = path.join(ROOTPATH, conf.paths.repo + '/uploads/home/initializeFolder.md')
+
+          const folderOptions = {
+            mode: 0o755
+          }
+          const fileOptions = {
+            mode: 0o666
+          }
 
           try {
-            if (fs.existsSync(homeDst) || fs.existsSync(guideDst)) {
+            fs.ensureDirSync(guideFolder, folderOptions)
+            fs.ensureDirSync(homeFolder, folderOptions)
+            fs.writeFileSync(guideUploadInitializer, fileOptions)
+            fs.writeFileSync(homeUploadInitializer, fileOptions)
+
+            if (fs.existsSync(homeDst) && fs.existsSync(guideDst) &&
+              fs.existsSync(guideUploadInitializer) && fs.existsSync(homeUploadInitializer)) {
               return fs.writeFileAsync(path.join(ROOTPATH, 'config.yml'), confRaw)
             }
+
+            // copy the default Home and Guide page and upload folder to repo
+            fs.copySync(homeSrc, homeDst)
+            fs.copySync(guideSrc, guideDst)
           } catch (err) {
             console.error(err)
             throw err
           }
 
-          // copy the default Home and Guide Page to repo
-          return fs.copy(homeSrc, homeDst).then((err) => {
-            if (err) throw err
-            fs.copy(guideSrc, guideDst).then((err) => {
-              if (err) throw err
-              return true
+          // commit the change
+          const commitUsr = {
+            name: 'Peer Learning System',
+            email: 'plearn@cs.hku.hk'
+          }
+          const gitClient = new Git({ 'git-dir': conf.paths.repo })
+          return gitClient.add(homeDst).then(() => {
+            gitClient.add(guideDst).then(() => {
+              gitClient.exec('commit', ['-m', 'first commit', '--author="' + commitUsr.name + ' <' + commitUsr.email + '>"']).then((childProcess) => {
+                return true
+              })
             })
           }).then(() => {
-            // add the default pages to local git
-            const commitUsr = {
-              name: 'Peer Learning System',
-              email: 'plearn@cs.hku.hk'
-            }
-            const gitClient = new Git({ 'git-dir': conf.paths.repo })
-            return gitClient.add(homeDst).then(() => {
-              gitClient.add(guideDst).then(() => {
-                gitClient.exec('commit', ['-m', 'first commit', '--author="' + commitUsr.name + ' <' + commitUsr.email + '>"']).then((childProcess) => {
-                  return true
-                })
-              })
-            }).then(() => {
-              return fs.writeFileAsync(path.join(ROOTPATH, 'config.yml'), confRaw)
-            })
+            return fs.writeFileAsync(path.join(ROOTPATH, 'config.yml'), confRaw)
           })
         })
       })

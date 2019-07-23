@@ -55,7 +55,7 @@
                   | {{ $t('editor.filefolderempty') }}
 
             footer
-              a.button.is-grey.is-outlined(@click='cancel') {{ $t('editor.discard') }}
+              a.button.is-grey.is-outlined(@click='cancel') {{ 'Cancel' }}
               a.button.is-green(@click='insertFileLink') {{ (mode === 'file') ? $t('editor.fileinsert') : $t('editor.imageinsert') }}
 
       transition(:duration="400")
