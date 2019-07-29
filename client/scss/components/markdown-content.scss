@@ -24,11 +24,11 @@
 	}
 
 	h1 {
-		// background-color: mc('blue-grey', '50');
-    // background: linear-gradient(to bottom, mc('blue-grey', '50'), mc('indigo', '50'));
+		background-color: mc('blue-grey', '50');
+    background: linear-gradient(to bottom, mc('blue-grey', '50'), mc('indigo', '50'));
 		border-bottom: 2px solid;
 		font-size: 18px;
-		// color: mc('black', '500');
+		color: mc('black', '500');
 
 		&:first-child {
 			margin-top: 1px;
