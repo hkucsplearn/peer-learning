@@ -3,7 +3,12 @@ extends ../layout.pug
 mixin tocMenu(silibingList)
   each item in silibingList
     li
-      a(href=item, title=item)= item.substr(1, item.length + 1)
+      if item.lastIndexOf('/', item.lastIndexOf('/') - 1) === -1
+        a(href=item, title=item)= item.substr(1, item.length + 1)
+      else if item.substr(1, item.length + 1) === pageData.meta.path
+        a(href=item, title=item)= item.substr(item.lastIndexOf('/') + 1, item.length + 1)
+      else
+        a(href=item, title=item)= item.substr(item.lastIndexOf('/', item.lastIndexOf('/') - 1) + 1, item.length + 1)
 
 mixin tocMenuForTree(ti)
   each node in ti
@@ -66,7 +71,6 @@ block content
               +displayParentPath(parentList)
           
           .content-bar
-
             .last-edit.is-hidden-mobile
               .date
                 span= 'Last edited '
