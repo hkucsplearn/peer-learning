@@ -49,7 +49,6 @@
 		background-color: lighten(mc('teal', '50'), 5%);
     background: linear-gradient(to bottom, lighten(mc('teal', '50'), 5%), mc('teal', '50'));
 		border: 1px solid mc('teal', '100');
-		border-right-width: 5px;
 		border-top-left-radius: 3px;
 		border-bottom-left-radius: 3px;
 		font-size: 16px;
@@ -58,7 +57,6 @@
 	}
 
 	.indent-h2 {
-		border-right: 5px solid mc('teal', '100');
 		margin-left: 20px;
 		padding-top: 1px;
 		padding-bottom: 20px;
@@ -83,7 +81,6 @@
 		background-color: lighten(mc('blue', '50'), 3%);
     background: linear-gradient(to bottom, lighten(mc('blue', '50'), 3%), mc('blue', '50'));
 		border: 1px solid mc('blue', '100');
-		border-right-width: 5px;
 		border-top-left-radius: 3px;
 		border-bottom-left-radius: 3px;
 		font-size: 14px;
@@ -94,7 +91,6 @@
 	}
 
 	.indent-h3 {
-		border-right: 5px solid mc('teal', '100');
 		margin-left: 20px;
 		margin-right: 1px;
 		padding-bottom: 10px;
