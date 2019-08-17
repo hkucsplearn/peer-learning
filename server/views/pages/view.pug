@@ -100,6 +100,7 @@ block content
               a.button.is-outlined(v-on:click='$store.dispatch("modalCreatePage/open")')
                 i.nc-icon-outline.ui-1_simple-add
                 span= t('nav.create')
+
             .content-options.only-show-for-mobile
               a.button.is-outlined(href='/source/' + pageData.meta.path)
                 i.nc-icon-outline.education_paper
@@ -107,6 +108,9 @@ block content
               a.button.is-outlined(href='/all')
                 i.nc-icon-outline.design_bullet-list-68
                 span= 'All Articles'
+
+          .hints.only-show-for-mobile
+            span= 'Use desktop version to create/edit articles'
 
           .hero
             h1.title#title= pageData.meta.title
