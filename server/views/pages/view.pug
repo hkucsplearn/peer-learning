@@ -115,6 +115,13 @@ block content
 
           .content.mkcontent(v-pre, class=[appconfig.theme.code.dark ? 'is-code-dark' : 'is-code-light'])
             != pageData.html
+          
+          
+          .related-topic-for-mobile.only-show-for-mobile
+            .sidebar-label-for-mobile
+              h2= 'Related Topics'
+            ul.sidebar-menu-for-mobile
+              +tocMenu(pageSilibingList)
 
   modal-create-page(basepath=pageData.meta.path)
   modal-move-page(current-path=pageData.meta.path)
