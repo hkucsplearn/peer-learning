@@ -3,7 +3,7 @@
 
 <img src="https://raw.githubusercontent.com/hkucsplearn/peer-learning/master/assets/demo/1.jpg" width="270"> <img src="https://raw.githubusercontent.com/hkucsplearn/peer-learning/master/assets/demo/2.jpg" width="270"> <img src="https://raw.githubusercontent.com/hkucsplearn/peer-learning/master/assets/demo/3.jpg" width="270">
 
-<img src="https://raw.githubusercontent.com/hkucsplearn/peer-learning/master/assets/demo/4.jpg">
+<img src="https://raw.githubusercontent.com/hkucsplearn/peer-learning/master/assets/demo/4.jpg" width="815">
 
 # Credit
 
