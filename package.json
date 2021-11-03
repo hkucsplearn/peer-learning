@@ -117,7 +117,7 @@
     "tar": "~4.4.2",
     "through2": "~2.0.3",
     "uuid": "~3.3.2",
-    "validator": "~8.1.0",
+    "validator": "~13.7.0",
     "validator-as-promised": "~1.0.2",
     "winston": "~2.3.1",
     "yargs": "~8.0.1"
