@@ -149,7 +149,7 @@
     "jquery-sticky": "~1.0.4",
     "lodash-cli": "~4.17.4",
     "lodash-es": "~4.17.4",
-    "node-sass": "~4.5.3",
+    "node-sass": "~7.0.0",
     "nodemon": "~1.11.0",
     "pug-lint": "~2.4.0",
     "twemoji-awesome": "~1.0.6",
