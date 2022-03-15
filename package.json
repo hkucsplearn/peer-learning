@@ -148,7 +148,7 @@
     "jquery-smooth-scroll": "~2.2.0",
     "jquery-sticky": "~1.0.4",
     "lodash-cli": "~4.17.4",
-    "lodash-es": "~4.17.4",
+    "lodash-es": "~4.17.21",
     "node-sass": "~4.5.3",
     "nodemon": "~1.11.0",
     "pug-lint": "~2.4.0",
